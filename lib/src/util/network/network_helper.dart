@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 import '../../core/exception/network_exception.dart';
@@ -40,6 +42,7 @@ class NetworkHelper {
         requestUrl: request.requestUrl.toString(),
       );
     } catch (error) {
+      print('$error');
       throw NetworkException(
         source: 'NetworkHelper.request',
         message: '$error',
@@ -63,6 +66,7 @@ class NetworkHelper {
       httpCode: response.statusCode,
       requestUrl: url.toString(),
       requestParameters: params,
+      responseBody: jsonDecode(response.body),
     );
   }
 

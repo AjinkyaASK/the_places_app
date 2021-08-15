@@ -17,9 +17,22 @@ dependencies:
   # For Network Calls
   http: ^0.13.3
 
+  # For Easier Equality Comparizon
+  equatable: ^2.0.3 #All Platforms
+
+  # For Functional Programming Concepts (Like Either)
+  dartz: ^0.10.0 #All Platforms
+
+  # For Local Database
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^2.1.1
+  hive_generator: ^1.1.0
+    
 
 flutter:
 

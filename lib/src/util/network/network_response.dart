@@ -13,5 +13,5 @@ class NetworkResponse {
   final int httpCode;
   final String requestUrl;
   final Map<String, String>? requestParameters;
-  final Map<String, dynamic>? responseBody;
+  final dynamic responseBody;
 }

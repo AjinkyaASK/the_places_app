@@ -20,7 +20,7 @@ void main() {
 
   Future<void> unreachableUrlCheck(NetworkRequestType requestType) async {
     // Arrange
-    final String url = 'https://google.com/nopage';
+    final String url = 'https://hiveword.com/papi/random/invalid';
 
     // Act
     final response = await NetworkHelper.request(NetworkRequest(
@@ -48,40 +48,40 @@ void main() {
   }
 
   test(
-      'Given call to request method for GET, when the requestUrl is not actually a url, throws NetworkException',
+      'Given call to request method for GET, when the requestUrl is not actually a url, then throws NetworkException',
       () async {
     await invalidUrlCheck(NetworkRequestType.Get);
   });
 
   test(
-      'Given call to request method for POST, when the requestUrl is not actually a url, throws NetworkException',
+      'Given call to request method for POST, when the requestUrl is not actually a url, then throws NetworkException',
       () async {
     await invalidUrlCheck(NetworkRequestType.Post);
   });
 
   test(
-      'Given call to request method for GET, when the requestUrl is not reachable, gives NetworkResponse with status code 404',
+      'Given call to request method for GET, when the requestUrl is not reachable, then produces NetworkResponse with status code 404',
       () async {
     await unreachableUrlCheck(NetworkRequestType.Get);
   });
 
   test(
-      'Given call to request method for POST, when the requestUrl is not reachable, gives NetworkResponse with status code 404',
+      'Given call to request method for POST, when the requestUrl is not reachable, then produces NetworkResponse with status code 404',
       () async {
     await unreachableUrlCheck(NetworkRequestType.Post);
   });
 
   test(
-      'Given call to request method for GET, when the requestUrl is reachable, gives NetworkResponse with status code 200',
+      'Given call to request method for GET, when the requestUrl is reachable, then produces NetworkResponse with status code 200',
       () async {
     await reachableUrlCheck(
-      url: 'https://www.zee5.com/',
+      url: 'https://hiveword.com/papi/random/locationNames',
       requestType: NetworkRequestType.Get,
     );
   });
 
   test(
-      'Given call to request method for POST, when the requestUrl is reachable, gives NetworkResponse with status code 200',
+      'Given call to request method for POST, when the requestUrl is reachable, then produces NetworkResponse with status code 200',
       () async {
     await reachableUrlCheck(
       url: 'https://www.zee5.com/',
