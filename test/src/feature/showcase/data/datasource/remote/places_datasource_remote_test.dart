@@ -4,7 +4,7 @@ import 'package:the_places_app/src/feature/showcase/data/datasource/remote/place
 import 'package:the_places_app/src/feature/showcase/data/model/place.dart';
 import 'package:the_places_app/src/feature/showcase/domain/entity/datasource.dart';
 
-void main() async {
+Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(PlaceAdapter());
 

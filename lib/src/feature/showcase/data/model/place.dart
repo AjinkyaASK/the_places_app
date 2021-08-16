@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 
+import '../../../../core/exception/general_exception.dart';
 import '../../core/api.dart';
 import '../../domain/entity/place.dart';
 
@@ -26,45 +27,78 @@ class Place extends PlaceBase {
         );
 
   factory Place.fromMap(Map<String, dynamic> data) {
-    assert(data.containsKey(PlacesApi.labels.id));
-    assert(data.containsKey(PlacesApi.labels.name) &&
-        data[PlacesApi.labels.name].isNotEmpty);
-    assert(data.containsKey(PlacesApi.labels.state) &&
-        data[PlacesApi.labels.state].isNotEmpty);
-    assert(data.containsKey(PlacesApi.labels.country) &&
-        data[PlacesApi.labels.country].isNotEmpty);
-    assert(data.containsKey(PlacesApi.labels.countryShort) &&
-        data[PlacesApi.labels.countryShort].isNotEmpty);
+    assert(
+        data.containsKey(PlacesApi.labels.id),
+        GeneralException(
+            source: 'Place', message: 'id does not exist in the data'));
+    assert(
+        data.containsKey(PlacesApi.labels.name) &&
+            data[PlacesApi.labels.name].isNotEmpty,
+        GeneralException(
+            source: 'Place',
+            message: 'name is empty or does not exist in the data'));
+    assert(
+        data.containsKey(PlacesApi.labels.state) &&
+            data[PlacesApi.labels.state].isNotEmpty,
+        GeneralException(
+            source: 'Place',
+            message: 'state is empty or does not exist in the data'));
+    assert(
+        data.containsKey(PlacesApi.labels.country) &&
+            data[PlacesApi.labels.country].isNotEmpty,
+        GeneralException(
+            source: 'Place',
+            message: 'country is empty or does not exist in the data'));
+    assert(
+        data.containsKey(PlacesApi.labels.countryShort) &&
+            data[PlacesApi.labels.countryShort].isNotEmpty,
+        GeneralException(
+            source: 'Place',
+            message: 'countryShort is empty or does not exist in the data'));
 
     if (!data.containsKey(PlacesApi.labels.id) ||
         data[PlacesApi.labels.id].toString().isEmpty)
-      throw 'id is empty or does not exist in the data';
+      throw GeneralException(
+          source: 'Place', message: 'id does not exist in the data');
 
     if (!data.containsKey(PlacesApi.labels.name) ||
         data[PlacesApi.labels.name].isEmpty)
-      throw 'name is empty or does not exist in the data';
+      GeneralException(
+          source: 'Place',
+          message: 'name is empty or does not exist in the data');
 
     if (!data.containsKey(PlacesApi.labels.state) ||
         data[PlacesApi.labels.state].isEmpty)
-      throw 'state is empty or does not exist in the data';
+      GeneralException(
+          source: 'Place',
+          message: 'state is empty or does not exist in the data');
 
     if (!data.containsKey(PlacesApi.labels.country) ||
         data[PlacesApi.labels.country].isEmpty)
-      throw 'country is empty or does not exist in the data';
+      GeneralException(
+          source: 'Place',
+          message: 'country is empty or does not exist in the data');
 
     if (!data.containsKey(PlacesApi.labels.countryShort) ||
         data[PlacesApi.labels.countryShort].isEmpty)
-      throw 'country short is empty or does not exist in the data';
+      GeneralException(
+          source: 'Place',
+          message: 'countryShort is empty or does not exist in the data');
 
-    return Place(
-      id: data[PlacesApi.labels.id],
-      name: data[PlacesApi.labels.name],
-      state: data[PlacesApi.labels.state],
-      country: data[PlacesApi.labels.country],
-      countryShort: data[PlacesApi.labels.countryShort],
-      wikipediaLink: data[PlacesApi.labels.wikipediaLink],
-      googleMapsLink: data[PlacesApi.labels.googleMapsLink],
-    );
+    try {
+      return Place(
+        id: data[PlacesApi.labels.id] as int,
+        name: data[PlacesApi.labels.name] as String,
+        state: data[PlacesApi.labels.state] as String,
+        country: data[PlacesApi.labels.country] as String,
+        countryShort: data[PlacesApi.labels.countryShort] as String,
+        wikipediaLink: data[PlacesApi.labels.wikipediaLink] as String?,
+        googleMapsLink: data[PlacesApi.labels.googleMapsLink] as String?,
+      );
+    } catch (error) {
+      throw GeneralException(
+          source: 'Place', message: 'Error while parsing data: $error');
+    }
   }
 
   Map<String, dynamic> toMap() {
