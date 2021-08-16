@@ -47,9 +47,11 @@ void main() async {
     }
   ];
 
+  final PlacesDatasourceRemote datasourceRemote = PlacesDatasourceRemote();
+  final PlacesDatasourceLocal datasourceLocal = PlacesDatasourceLocal();
   final PlacesRepository repository = PlacesRepository(
     datasourceLocal: PlacesDatasourceLocal(),
-    datasourceRemote: PlacesDatasourceRemote(),
+    datasourceRemote: datasourceRemote,
   );
 
   test(
@@ -83,6 +85,8 @@ void main() async {
       'Given call to getFavoritePlaces, When localDataSource is available, Then it returns a list of Place',
       () async {
     // Arrange
+    await PlacesDatasourceLocal.init();
+
     // Act
     final response = await repository.getFavoritePlaces();
 
@@ -112,6 +116,7 @@ void main() async {
     'Given call to setFavoritePlaces with a list of place, When localDataSource is available, Then it stores given data and completes normally',
     () async {
       // Arrange
+      await PlacesDatasourceLocal.init();
       final List<Place> placesRequestedToStored =
           placesData.map((place) => Place.fromMap(place)).toList();
       final List<Place> storedPlaces = [];
