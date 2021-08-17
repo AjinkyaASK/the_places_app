@@ -17,14 +17,14 @@ class PlacesDatasourceRemote extends PlacesDatasource {
   }
 
   @override
-  Future<List<Place>> reset() {
-    throw UnsupportedError(
-        'Reset functionality is not supported for remote datasource');
-  }
+  Future<List<Place>> reset() => throw UnsupportedError(
+      'Reset functionality is not supported for remote datasource');
 
   @override
-  Future<void> set(List<Place> places) {
-    throw UnsupportedError(
-        'Set functionality is not supported for remote datasource');
-  }
+  Future<void> set(List<Place> places) => throw UnsupportedError(
+      'Set functionality is not supported for remote datasource');
+
+  @override
+  Future<void> remove(List<Place> places) => throw UnsupportedError(
+      'Remove functionality is not supported for remote datasource');
 }

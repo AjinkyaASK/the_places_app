@@ -4,4 +4,5 @@ abstract class PlacesDatasource {
   Future<List<Place>> get();
   Future<void> set(List<Place> places);
   Future<List<Place>> reset();
+  Future<void> remove(List<Place> places);
 }

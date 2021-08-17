@@ -60,42 +60,14 @@ class PlacesDatasourceLocal extends PlacesDatasource {
   @override
   Future<void> set(List<Place> places) async {
     _initializationCheck();
-
-    //TODO: We don't need this below code for validating parameters once the storing actual object instead of Map is in place
-    // for (final place in places) {
-    //   if (!place.containsKey(PlacesApi.labels.id) ||
-    //       place[PlacesApi.labels.id].toString().isEmpty)
-    //     throw GeneralException(
-    //         source: 'PlacesDatasourceLocal',
-    //         message: 'id is empty or does not exist in the data');
-
-    //   if (!place.containsKey(PlacesApi.labels.name) ||
-    //       place[PlacesApi.labels.name].isEmpty)
-    //     throw GeneralException(
-    //         source: 'PlacesDatasourceLocal',
-    //         message: 'name is empty or does not exist in the data');
-
-    //   if (!place.containsKey(PlacesApi.labels.state) ||
-    //       place[PlacesApi.labels.state].isEmpty)
-    //     throw GeneralException(
-    //         source: 'PlacesDatasourceLocal',
-    //         message: 'state is empty or does not exist in the data');
-
-    //   if (!place.containsKey(PlacesApi.labels.country) ||
-    //       place[PlacesApi.labels.country].isEmpty)
-    //     throw GeneralException(
-    //         source: 'PlacesDatasourceLocal',
-    //         message: 'country is empty or does not exist in the data');
-
-    //   if (!place.containsKey(PlacesApi.labels.countryShort) ||
-    //       place[PlacesApi.labels.countryShort].isEmpty)
-    //     throw GeneralException(
-    //         source: 'PlacesDatasourceLocal',
-    //         message: 'country short is empty or does not exist in the data');
-    // }
-
     for (final Place place in places) {
       _placesBox.put(place.id, place);
     }
+  }
+
+  @override
+  Future<void> remove(List<Place> places) async {
+    _initializationCheck();
+    await _placesBox.deleteAll(places.map((place) => place.id).toList());
   }
 }
