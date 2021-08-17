@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
 set(BINARY_NAME "the_places_app")
-set(APPLICATION_ID "com.example.the_places_app")
+set(APPLICATION_ID "com.ajinkyakaranjikar.the_places_app")
 
 cmake_policy(SET CMP0063 NEW)
 
