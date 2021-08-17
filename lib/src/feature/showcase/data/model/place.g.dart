@@ -24,13 +24,14 @@ class PlaceAdapter extends TypeAdapter<Place> {
       countryShort: fields[4],
       wikipediaLink: fields[5],
       googleMapsLink: fields[6],
+      favorite: fields[7] ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, Place obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class PlaceAdapter extends TypeAdapter<Place> {
       ..writeByte(5)
       ..write(obj.wikipediaLink)
       ..writeByte(6)
-      ..write(obj.googleMapsLink);
+      ..write(obj.googleMapsLink)
+      ..writeByte(7)
+      ..write(obj.favorite);
   }
 
   @override

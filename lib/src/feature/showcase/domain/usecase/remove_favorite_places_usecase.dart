@@ -8,28 +8,23 @@ import '../../../../core/usecase/usecase_base.dart';
 import '../entity/place.dart';
 import '../repository/repository.dart';
 
-class SetPlacesUsecase implements UsecaseBase<Either<Exception, void>> {
-  SetPlacesUsecase(this.repository);
+class RemoveFavoritePlacesUsecase
+    implements UsecaseBase<Either<Exception, void>> {
+  RemoveFavoritePlacesUsecase(this.repository);
 
   final PlacesRepositoryBase repository;
 
   @override
   Future<Either<Exception, void>> call(
       {List<PlaceBase> places = const <PlaceBase>[]}) async {
-    if (places.isEmpty)
-      return Left(GeneralException(
-        source: 'SetPlacesUsecase',
-        message: 'places cannot be empty',
-      ));
-
     try {
-      await repository.setFavoritePlaces(places);
+      await repository.removeFavoritePlaces(places);
       return Right(null);
     } on Exception catch (exception) {
       return Left(exception);
     } catch (error) {
       return Left(GeneralException(
-        source: 'SetPlacesUsecase',
+        source: 'RemoveFavoritePlacesUsecase',
         message: '$error',
       ));
     }

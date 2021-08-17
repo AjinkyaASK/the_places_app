@@ -9,6 +9,7 @@ abstract class PlaceBase extends Equatable {
     required this.countryShort,
     this.wikipediaLink,
     this.googleMapsLink,
+    this.favorite = false,
   });
 
   final int id;
@@ -18,4 +19,5 @@ abstract class PlaceBase extends Equatable {
   final String countryShort;
   final String? wikipediaLink;
   final String? googleMapsLink;
+  final bool favorite;
 }

@@ -16,6 +16,7 @@ class Place extends PlaceBase {
     @HiveField(4) required final String countryShort,
     @HiveField(5) final String? wikipediaLink,
     @HiveField(6) final String? googleMapsLink,
+    @HiveField(7) final bool favorite = false,
   }) : super(
           id: id,
           name: name,
@@ -24,6 +25,7 @@ class Place extends PlaceBase {
           countryShort: countryShort,
           wikipediaLink: wikipediaLink,
           googleMapsLink: googleMapsLink,
+          favorite: favorite,
         );
 
   factory Place.fromMap(Map<String, dynamic> data) {
