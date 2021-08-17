@@ -148,15 +148,6 @@ class ShowcaseView extends StatelessWidget {
         }),
       child: Consumer<ShowcaseController>(
         builder: (__, controller, ____) {
-          if (controller.loading)
-            return Center(
-              child: SizedBox(
-                width: 48.0,
-                height: 48.0,
-                child: CircularProgressIndicator(),
-              ),
-            );
-
           return Scaffold(
             appBar: AppBar(
               title: Text(
@@ -352,12 +343,20 @@ class ShowcaseView extends StatelessWidget {
                 ),
               ),
             ),
-            body: Stack(
-              // fit: StackFit.expand,
-              alignment: Alignment.center,
-              // children: _cards,
-              children: _cards.reversed.toList(),
-            ),
+            body: controller.loading
+                ? Center(
+                    child: SizedBox(
+                      width: 48.0,
+                      height: 48.0,
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Stack(
+                    // fit: StackFit.expand,
+                    alignment: Alignment.center,
+                    // children: _cards,
+                    children: _cards.reversed.toList(),
+                  ),
           );
         },
       ),

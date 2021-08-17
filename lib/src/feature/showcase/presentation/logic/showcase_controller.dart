@@ -70,7 +70,10 @@ class ShowcaseController extends ChangeNotifier {
     required void Function() onComplete,
   }) async {
     _places.removeWhere((item) => item.id == place.id);
-    onComplete();
+    if (_places.isEmpty)
+      await loadPlaces(onComplete);
+    else
+      onComplete();
     refresh();
   }
 
@@ -86,7 +89,7 @@ class ShowcaseController extends ChangeNotifier {
         flashError(exception.message ?? '');
         refresh();
       },
-      (done) {
+      (done) async {
         _favoritePlaces.add(Place(
           id: place.id,
           name: place.name,
@@ -98,7 +101,11 @@ class ShowcaseController extends ChangeNotifier {
           favorite: true,
         ));
         _places.removeWhere((item) => item.id == place.id);
-        onComplete();
+        if (_places.isEmpty)
+          await loadPlaces(onComplete);
+        else
+          onComplete();
+        refresh();
         refresh();
       },
     );
