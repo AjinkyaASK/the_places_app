@@ -16,7 +16,7 @@ class ShowcaseController extends ChangeNotifier {
     required this.setPlacesUsecase,
   }) {
     //TODO: Not sure about placement of this call
-    init();
+    // init();
   }
 
   final GetPlacesUsecase getPlacesUsecase;
@@ -52,17 +52,36 @@ class ShowcaseController extends ChangeNotifier {
     //TODO: Implement something that flashes success
   }
 
-  Future<void> init() async {
+  Future<void> init(void Function() onComplete) async {
     ///`loadFavoritePlaces` is placed first as it fetches data from local storage, apparently finishes work faster,
     ///and this is what is available to show when device is in offline mode
     await loadFavoritePlaces();
 
     ///This is second in sequence, because this is dependent on Network Connectivity and takes longer execution time
     //TODO: Place a network connectivity check here before calling `loadPlaces`
-    await loadPlaces();
+    await loadPlaces(onComplete);
   }
 
-  Future<void> loadPlaces() async {
+  Future<void> onRemoved({
+    required Place place,
+    required void Function() onComplete,
+  }) async {
+    _places.removeWhere((item) => item.id == place.id);
+    onComplete();
+    refresh();
+  }
+
+  Future<void> onFavorite({
+    required Place place,
+    required void Function() onComplete,
+  }) async {
+    _favoritePlaces.add(place);
+    _places.removeWhere((item) => item.id == place.id);
+    onComplete();
+    refresh();
+  }
+
+  Future<void> loadPlaces(void Function() onComplete) async {
     startLoading();
 
     final Either<Exception, List<PlaceBase>> response =
@@ -71,11 +90,13 @@ class ShowcaseController extends ChangeNotifier {
     response.fold(
       (Exception exception) {
         flashError(exception.message ?? ShowcaseMessages.BlanketErrorMessage);
+        onComplete();
         doneLoading();
       },
       (List<PlaceBase> places) {
         _places.clear();
         _places.addAll(places.map((place) => place as Place));
+        onComplete();
         doneLoading();
         //TODO: Not sure about below statement
         flashSuccess();
