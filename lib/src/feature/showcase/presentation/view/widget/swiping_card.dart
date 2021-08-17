@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 class SwipingCard extends StatelessWidget {
-  SwipingCard({
+  const SwipingCard({
     Key? key,
     this.threshold = 0.60,
     required this.child,
     this.childWhileSwiping,
+    required this.onTap,
     required this.onSwipeRight,
     required this.onSwipeLeft,
   }) : super(key: key);
@@ -13,11 +14,19 @@ class SwipingCard extends StatelessWidget {
   final double threshold;
   final Widget? childWhileSwiping;
   final Widget child;
-  void Function() onSwipeLeft;
-  void Function() onSwipeRight;
+  final void Function() onTap;
+  final void Function() onSwipeLeft;
+  final void Function() onSwipeRight;
 
   @override
   Widget build(BuildContext context) {
+    final Widget newCard = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: child,
+      ),
+    );
     return Draggable(
       onDragEnd: (details) {
         if (details.offset.dx.isNegative &&
@@ -30,8 +39,8 @@ class SwipingCard extends StatelessWidget {
         }
       },
       childWhenDragging: childWhileSwiping ?? SizedBox(),
-      feedback: child,
-      child: child,
+      feedback: newCard,
+      child: newCard,
     );
   }
 }
