@@ -11,6 +11,8 @@ import '../../domain/usecase/get_favorite_places_usecase.dart';
 import '../../domain/usecase/get_places_usecase.dart';
 import '../../domain/usecase/set_places_usecase.dart';
 import '../logic/showcase_controller.dart';
+import 'widget/place_card.dart';
+import 'widget/swiping_card.dart';
 
 class ShowcaseView extends StatelessWidget {
   ShowcaseView({Key? key}) : super(key: key);
@@ -36,12 +38,13 @@ class ShowcaseView extends StatelessWidget {
 
   final List<Widget> _cards = <Widget>[];
 
-  void _loadCards({
+  List<Widget> _buildAndGetCards({
     required BuildContext context,
   }) {
-    _cards.clear();
-    double margin = 54;
-    final double marginToCut = 18;
+    final List<Widget> cards = <Widget>[];
+
+    double marginTop = 54;
+    const double marginToReduce = 18;
 
     double opacity = 1.0;
     double scale = 1.0;
@@ -71,127 +74,46 @@ class ShowcaseView extends StatelessWidget {
           break;
       }
 
-      final card = _placeCard(
-        context: context,
-        place: place,
-        opacity: opacity,
-        scale: scale,
-      );
-
-      opacity = opacity > 0.33 ? opacity -= 0.33 : 0.0;
-
-      _cards.add(
+      cards.add(
         Positioned(
-          top: margin - marginToCut,
-          // bottom: marginMax,
-          child: Draggable(
-            onDragEnd: (details) {
-              // print(
-              //     'Drag end ${details.offset.dx} / ${MediaQuery.of(context).size.width}');
-
-              if (details.offset.dx.isNegative &&
-                  details.offset.dx.abs() / MediaQuery.of(context).size.width >
-                      0.60) {
-                _controller.onRemoved(
-                  place: place,
-                  onComplete: () => _loadCards(context: context),
-                );
-              } else if (details.offset.dx / MediaQuery.of(context).size.width >
-                  0.60) {
-                _controller.onFavorite(
-                  place: place,
-                  onComplete: () => _loadCards(context: context),
-                );
-              }
+          top: marginTop - marginToReduce,
+          child: SwipingCard(
+            onSwipeRight: () {
+              _controller.onFavorite(
+                place: place,
+                onComplete: () => _buildAndGetCards(context: context),
+              );
             },
-            childWhenDragging: Container(),
-            feedback: card,
-            child: card,
+            onSwipeLeft: () {
+              _controller.onRemoved(
+                place: place,
+                onComplete: () => _buildAndGetCards(context: context),
+              );
+            },
+            child: PlaceCard(
+              place: place,
+              opacity: opacity,
+              scale: scale,
+            ),
           ),
         ),
       );
 
       index++;
-      margin -= marginToCut;
+      marginTop -= marginToReduce;
     }
-  }
 
-  Widget _placeCard({
-    required BuildContext context,
-    required Place place,
-    double opacity = 1.0,
-    double scale = 1.0,
-  }) {
-    return Transform.scale(
-      scale: scale,
-      alignment: Alignment.topCenter,
-      child: Card(
-        elevation: 8.0,
-        shadowColor: Colors.grey.shade300.withOpacity(0.25),
-        color: Colors.white,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Container(
-          width: double.maxFinite,
-          height: double.maxFinite,
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.8,
-            maxHeight: MediaQuery.of(context).size.height * 0.775,
-            minWidth: MediaQuery.of(context).size.width * 0.5,
-            minHeight: MediaQuery.of(context).size.height * 0.5,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.green.withOpacity(opacity),
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Opacity(
-                opacity: 0.25,
-                child: Image.asset(
-                  ImageArtifacts.profilePlaceholder,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Text(
-                        place.name,
-                        style: TextStyle(
-                          fontSize: 32.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '${place.state}, ${place.country}',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                      ),
-                    ),
-                    Text(
-                        'Opacity: ${opacity.toStringAsFixed(2)} | Scale: $scale'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return cards;
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ShowcaseController>(
-      create: (_) => _controller..init(() => _loadCards(context: context)),
+      create: (_) => _controller
+        ..init(() {
+          _cards.clear();
+          _cards.addAll(_buildAndGetCards(context: context));
+        }),
       child: Consumer<ShowcaseController>(
         builder: (__, controller, ____) {
           if (controller.loading)
