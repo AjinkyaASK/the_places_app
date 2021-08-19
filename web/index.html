@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-  -->
   <base href="/">
 
   <meta charset="UTF-8">
@@ -27,9 +17,9 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <script src="scripts/js/firebase/8.6.1/firebase-app.js"></script>
+  <script src="scripts/js/firebase/8.6.1/firebase-auth.js"></script>
+
   <script>
     var serviceWorkerVersion = null;
     var scriptLoaded = false;
@@ -95,13 +85,17 @@
     }
   </script>
 
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="/__/firebase/8.9.1/firebase-app.js"></script>
-
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-      https://firebase.google.com/docs/web/setup#available-libraries -->
-
-  <!-- Initialize Firebase -->
-  <script src="/__/firebase/init.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyC3ThcK0LczM42xEKSe-TMpjQYk5w_VvB4",
+      authDomain: "the-places-app.firebaseapp.com",
+      projectId: "the-places-app",
+      storageBucket: "the-places-app.appspot.com",
+      messagingSenderId: "189577389604",
+      appId: "1:189577389604:web:7cae1c22b8394a3c6a9ab1"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </body>
 </html>
