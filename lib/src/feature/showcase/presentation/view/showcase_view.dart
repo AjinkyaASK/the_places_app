@@ -1,12 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_places_app/src/feature/auth/core/util/authentication.dart';
-import 'package:the_places_app/src/util/navigation/pages.dart';
-import 'package:the_places_app/src/util/navigation/router.dart';
 
+import '../../../../core/exception/general_exception.dart';
+import '../../../../util/navigation/pages.dart';
+import '../../../../util/navigation/router.dart';
 import '../../../../value/labels.dart';
+import '../../../auth/data/datasource/local/user_datasource_local.dart';
 import '../../../auth/data/model/user.dart';
+import '../../../auth/data/repository/auth_repository.dart';
+import '../../core/messages.dart';
 import '../../data/datasource/local/places_datasource_local.dart';
 import '../../data/datasource/remote/places_datasource_remote.dart';
 import '../../data/model/place.dart';
@@ -170,10 +173,12 @@ class ShowcaseView extends StatelessWidget {
                   backgroundImage: user.pictureUrl.isEmpty
                       ? null
                       : CachedNetworkImageProvider(user.pictureUrl),
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
+                  child: user.pictureUrl.isEmpty
+                      ? Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        )
+                      : null,
                   backgroundColor: Colors.grey.shade800,
                 ),
               ),
@@ -337,7 +342,9 @@ class ShowcaseView extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () async {
-                        await Authentication.signOut(onComplete: () async {
+                        try {
+                          // TODO: Signout call below needs to be well referenced
+                          await AuthRepository(UserDatasourceLocal()).signOut();
                           await controller.removeAllFavorites();
                           if (RouteManger.navigatorKey.currentState != null)
                             RouteManger.navigatorKey.currentState!
@@ -345,9 +352,13 @@ class ShowcaseView extends StatelessWidget {
                               Pages.authentication,
                               (route) => false,
                             );
-                        }, onFailure: (message) {
-                          controller.flashError(message);
-                        });
+                        } on GeneralException catch (exception) {
+                          controller.flashError(exception.message ??
+                              ShowcaseMessages.BlanketErrorMessage);
+                        } catch (e) {
+                          controller
+                              .flashError(ShowcaseMessages.BlanketErrorMessage);
+                        }
                       },
                       child: Container(
                         width: double.maxFinite,

@@ -3,23 +3,32 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../data/model/user.dart';
 
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
+import '../../../showcase/core/messages.dart';
 import '../../../showcase/presentation/view/showcase_view.dart';
-import '../../core/util/authentication.dart';
-import '../../data/model/user.dart';
 import '../../domain/usecase/sign_in_as_guest_usecase.dart';
+import '../../domain/usecase/sign_in_with_facebook_usecase.dart';
+import '../../domain/usecase/sign_in_with_google_usecase.dart';
+import '../../domain/usecase/sign_out_usecase.dart';
 
 class AuthController extends ChangeNotifier {
   AuthController({
     required this.signInAsGuestUseCase,
+    required this.signInWithGoogleUseCase,
+    required this.signInWithFacebookUseCase,
+    required this.signOutUseCase,
   })  : isSignInWithGoogleSupported =
             kIsWeb || Platform.isAndroid || Platform.isIOS,
         isSignInWithFacebookSupported =
             kIsWeb || Platform.isAndroid || Platform.isIOS;
 
   final SignInAsGuestUseCase signInAsGuestUseCase;
+  final SignInWithGoogleUseCase signInWithGoogleUseCase;
+  final SignInWithFacebookUseCase signInWithFacebookUseCase;
+  final SignOutUseCase signOutUseCase;
 
   bool _isLoading = false;
   bool _isSigningInWithGoogle = false;
@@ -76,37 +85,74 @@ class AuthController extends ChangeNotifier {
   Future<void> signInWithGoogle(BuildContext context) async {
     _isSigningInWithGoogle = true;
     startLoading();
-    final PlacesAppUser? result = await Authentication.signInWithGoogle(
+    final result = await signInWithGoogleUseCase(
       onAuthFailure: (message) => onAuthFailure(
         context: context,
         message: message,
       ),
     );
-    if (result != null) {
-      _isSigningInWithGoogle = false;
-      doneLoading();
-      if (RouteManger.navigatorKey.currentState != null)
-        RouteManger.navigatorKey.currentState!.pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (_) => ShowcaseView(
-              user: result,
+
+    result.fold((exception) {}, (user) {
+      if ((user as PlacesAppUser?) != null) {
+        _isSigningInWithGoogle = false;
+        doneLoading();
+        if (RouteManger.navigatorKey.currentState != null)
+          RouteManger.navigatorKey.currentState!.pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => ShowcaseView(
+                user: user!,
+              ),
             ),
-          ),
-          (route) => false,
+            (route) => false,
+          );
+      } else {
+        onAuthFailure(
+          context: context,
+          message: ShowcaseMessages.BlanketErrorMessage,
         );
-      return;
-    } else {
-      onAuthFailure(context: context, message: 'Something went wrong');
-    }
-    _isSigningInWithGoogle = false;
-    doneLoading();
+        _isSigningInWithGoogle = false;
+        doneLoading();
+      }
+    });
   }
 
   Future<void> signInWithFacebook(BuildContext context) async {
     startLoading();
     _isSigningInWithFacebook = true;
-    await Future.delayed(Duration(seconds: 2));
-    _isSigningInWithFacebook = false;
-    doneLoading();
+
+    final result = await signInWithFacebookUseCase(
+      onAuthFailure: (message) => onAuthFailure(
+        context: context,
+        message: message,
+      ),
+    );
+
+    result.fold((exception) {}, (user) {
+      if ((user as PlacesAppUser?) != null) {
+        _isSigningInWithFacebook = false;
+        doneLoading();
+        if (RouteManger.navigatorKey.currentState != null)
+          RouteManger.navigatorKey.currentState!.pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => ShowcaseView(
+                user: user!,
+              ),
+            ),
+            (route) => false,
+          );
+      } else {
+        onAuthFailure(
+          context: context,
+          message: ShowcaseMessages.BlanketErrorMessage,
+        );
+        _isSigningInWithFacebook = false;
+        doneLoading();
+      }
+    });
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    final result = await signOutUseCase();
+    result.fold((exception) {}, (success) {});
   }
 }

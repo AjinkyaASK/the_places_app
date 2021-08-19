@@ -6,17 +6,23 @@ import '../../../../core/usecase/usecase_base.dart';
 import '../entity/user.dart';
 import '../repository/auth_repository.dart';
 
-class SignInAsGuestUseCase
-    implements UsecaseBase<Either<Exception, PlacesAppUserBase>> {
-  SignInAsGuestUseCase(this.repository);
+class SignInWithGoogleUseCase
+    implements UsecaseBase<Either<Exception, PlacesAppUserBase?>> {
+  SignInWithGoogleUseCase(this.repository);
 
   final AuthRepositoryBase repository;
 
   @override
-  Future<Either<Exception, PlacesAppUserBase>> call() async {
+  Future<Either<Exception, PlacesAppUserBase?>> call(
+      {void Function(String)? onAuthFailure}) async {
     try {
-      final user = await repository.signInAsGuest();
-      return Right(user);
+      final result = await repository.signInWithGoogle(
+        onAuthFailure: onAuthFailure ??
+            (message) {
+              print('Sign in failed');
+            },
+      );
+      return Right(result);
     } catch (error) {
       return Left(GeneralException(
         source: 'source',

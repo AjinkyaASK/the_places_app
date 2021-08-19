@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:the_places_app/src/feature/auth/core/local_database_keys.dart';
 
 import '../../../../../core/exception/general_exception.dart';
+import '../../../core/local_database_keys.dart';
 import '../../../domain/entity/datasource.dart';
 
 class UserDatasourceLocal implements UserDatasource {

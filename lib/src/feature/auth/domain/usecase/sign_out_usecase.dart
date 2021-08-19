@@ -3,24 +3,24 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/exception/exception.dart';
 import '../../../../core/exception/general_exception.dart';
 import '../../../../core/usecase/usecase_base.dart';
-import '../entity/user.dart';
 import '../repository/auth_repository.dart';
 
-class SignInAsGuestUseCase
-    implements UsecaseBase<Either<Exception, PlacesAppUserBase>> {
-  SignInAsGuestUseCase(this.repository);
+class SignOutUseCase implements UsecaseBase<Either<Exception, void>> {
+  SignOutUseCase(this.repository);
 
   final AuthRepositoryBase repository;
 
   @override
-  Future<Either<Exception, PlacesAppUserBase>> call() async {
+  Future<Either<Exception, void>> call() async {
     try {
-      final user = await repository.signInAsGuest();
-      return Right(user);
+      await repository.signOut();
+      return Right(null);
+    } on GeneralException catch (exception) {
+      return Left(exception);
     } catch (error) {
       return Left(GeneralException(
-        source: 'source',
-        message: 'Error signing in as a guest',
+        source: 'SignOutUseCase',
+        message: 'Error signing out. Try again.',
       ));
     }
   }

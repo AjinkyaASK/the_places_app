@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:the_places_app/src/util/url/url_utility.dart';
+import '../../../../../util/url/url_utility.dart';
 
 import '../../../data/model/place.dart';
 

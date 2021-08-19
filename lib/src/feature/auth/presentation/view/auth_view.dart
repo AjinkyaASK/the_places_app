@@ -2,14 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/datasource/local/user_datasource_local.dart';
+import '../../data/repository/auth_repository.dart';
 import '../../domain/usecase/sign_in_as_guest_usecase.dart';
+import '../../domain/usecase/sign_in_with_facebook_usecase.dart';
+import '../../domain/usecase/sign_in_with_google_usecase.dart';
+import '../../domain/usecase/sign_out_usecase.dart';
 import '../logic/auth_controller.dart';
 
 class AuthenticationView extends StatelessWidget {
   AuthenticationView({Key? key}) : super(key: key);
-  static final UserDatasourceLocal _datasourceLocal = UserDatasourceLocal();
+  static final AuthRepository _authRepository =
+      AuthRepository(UserDatasourceLocal());
   final AuthController _controller = AuthController(
-      signInAsGuestUseCase: SignInAsGuestUseCase(_datasourceLocal));
+    signInAsGuestUseCase: SignInAsGuestUseCase(_authRepository),
+    signInWithGoogleUseCase: SignInWithGoogleUseCase(_authRepository),
+    signInWithFacebookUseCase: SignInWithFacebookUseCase(_authRepository),
+    signOutUseCase: SignOutUseCase(_authRepository),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +32,29 @@ class AuthenticationView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(
-                      'Welcome to The\nPlaces App',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 28.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            'Welcome to',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          'The Places App',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 28.0,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
                     ),
                     Column(
                       mainAxisSize: MainAxisSize.min,
