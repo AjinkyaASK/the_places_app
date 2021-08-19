@@ -23,219 +23,227 @@ class DetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: HeaderDelegate(
-              collapsedHeight: kToolbarHeight,
-              expandedHeight: 350.0,
-              title: place.name,
-              foregroundColor: foregroundColor,
-              backgroundColor: backgroundColor,
-              backgroundImageUrl: 'https://picsum.photos/720/1280',
-              backgroundImageCacheKey: place.id.toString(),
-              backgroundImageHeroTag: place.id,
-              place: place,
-              onFavorite: onFavorite,
-              onFavoriteRemoved: onFavoriteRemoved,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: HeaderDelegate(
+                collapsedHeight: kToolbarHeight,
+                expandedHeight: 350.0,
+                title: place.name,
+                foregroundColor: foregroundColor,
+                backgroundColor: backgroundColor,
+                backgroundImageUrl: 'https://picsum.photos/720/1280',
+                backgroundImageCacheKey: place.id.toString(),
+                backgroundImageHeroTag: place.id,
+                place: place,
+                onFavorite: onFavorite,
+                onFavoriteRemoved: onFavoriteRemoved,
+              ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Hero(
-                      tag: place.name,
-                      transitionOnUserGestures: true,
-                      child: Material(
-                        type: MaterialType.transparency,
-                        child: Text(
-                          place.name,
-                          style:
-                              Theme.of(context).textTheme.headline6!.copyWith(
-                                    decoration: TextDecoration.none,
-                                    color: foregroundColor,
-                                    fontSize: 32.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Hero(
+                        tag: place.name,
+                        transitionOnUserGestures: true,
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: Text(
+                            place.name,
+                            style:
+                                Theme.of(context).textTheme.headline6!.copyWith(
+                                      decoration: TextDecoration.none,
+                                      color: foregroundColor,
+                                      fontSize: 32.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  // State
-                  Hero(
-                    tag: '${place.name}${place.state}${place.country}',
-                    transitionOnUserGestures: true,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.0),
-                        color: foregroundColor.withOpacity(0.75),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
+                    // State
+                    Hero(
+                      tag: '${place.name}${place.state}${place.country}',
+                      transitionOnUserGestures: true,
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: foregroundColor.withOpacity(0.75),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 4.0),
-                              child: Icon(
-                                Icons.location_pin,
-                                size: 16.0,
-                                color: backgroundColor.withOpacity(0.8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 4.0,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4.0),
+                                child: Icon(
+                                  Icons.location_pin,
+                                  size: 16.0,
+                                  color: backgroundColor.withOpacity(0.8),
+                                ),
                               ),
-                            ),
-                            Flexible(
-                              child: Material(
-                                type: MaterialType.transparency,
-                                child: Text(
-                                  '${place.state}, ${place.country}',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6!
-                                      .copyWith(
-                                        decoration: TextDecoration.none,
-                                        color: backgroundColor,
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.normal,
+                              Flexible(
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: Text(
+                                    '${place.state}, ${place.country}',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6!
+                                        .copyWith(
+                                          decoration: TextDecoration.none,
+                                          color: backgroundColor,
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Actions
+                    Row(
+                      children: [
+                        if (place.googleMapsLink != null)
+                          Expanded(
+                            child: MaterialButton(
+                              onPressed: () =>
+                                  UrlUtility.launchUrl(place.wikipediaLink!),
+                              elevation: 0.0,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                  color: foregroundColor.withOpacity(0.5),
+                                ),
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: Icon(
+                                        Icons.info,
+                                        size: 20.0,
+                                        color:
+                                            foregroundColor.withOpacity(0.75),
                                       ),
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        'Wiki',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            TextStyle(color: foregroundColor),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Actions
-                  Row(
-                    children: [
-                      if (place.wikipediaLink != null)
-                        Expanded(
-                          child: MaterialButton(
-                            onPressed: () =>
-                                UrlUtility.launchUrl(place.wikipediaLink!),
-                            elevation: 0.0,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: foregroundColor.withOpacity(0.5),
+                          ),
+                        if (place.wikipediaLink != null &&
+                            place.googleMapsLink != null)
+                          const SizedBox(
+                            width: 16.0,
+                          ),
+                        if (place.wikipediaLink != null)
+                          Expanded(
+                            child: MaterialButton(
+                              onPressed: () =>
+                                  UrlUtility.launchUrl(place.googleMapsLink!),
+                              elevation: 0.0,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                  color: foregroundColor.withOpacity(0.5),
+                                ),
+                                borderRadius: BorderRadius.circular(4.0),
                               ),
-                              borderRadius: BorderRadius.circular(4.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Icon(
-                                      Icons.location_pin,
-                                      size: 20.0,
-                                      color: foregroundColor.withOpacity(0.75),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: Icon(
+                                        Icons.location_pin,
+                                        size: 20.0,
+                                        color:
+                                            foregroundColor.withOpacity(0.75),
+                                      ),
                                     ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      'Maps',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(color: foregroundColor),
+                                    Flexible(
+                                      child: Text(
+                                        'Maps',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            TextStyle(color: foregroundColor),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      if (place.wikipediaLink != null &&
-                          place.googleMapsLink != null)
-                        const SizedBox(
-                          width: 16.0,
-                        ),
-                      if (place.googleMapsLink != null)
-                        Expanded(
-                          child: MaterialButton(
-                            onPressed: () =>
-                                UrlUtility.launchUrl(place.googleMapsLink!),
-                            elevation: 0.0,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: foregroundColor.withOpacity(0.5),
-                              ),
-                              borderRadius: BorderRadius.circular(4.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Icon(
-                                      Icons.info,
-                                      size: 20.0,
-                                      color: foregroundColor.withOpacity(0.75),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      'Wiki',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(color: foregroundColor),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  // Details
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Table(
-                      columnWidths: {
-                        0: FlexColumnWidth(1),
-                        1: FlexColumnWidth(3),
-                      },
-                      children: [
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Text('State'),
-                            ),
-                            Text(place.state),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Text('Country'),
-                            Text(place.country),
-                          ],
-                        ),
                       ],
                     ),
-                  ),
-                ],
+                    // Details
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Table(
+                        columnWidths: {
+                          0: FlexColumnWidth(1),
+                          1: FlexColumnWidth(3),
+                        },
+                        children: [
+                          TableRow(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text('State'),
+                              ),
+                              Text(place.state),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              Text('Country'),
+                              Text(place.country),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

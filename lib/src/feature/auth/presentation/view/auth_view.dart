@@ -59,6 +59,59 @@ class AuthenticationView extends StatelessWidget {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (controller.isSignInWithAppleSupported)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: MaterialButton(
+                              minWidth: 200.0,
+                              onPressed: () => controller.loading
+                                  ? null
+                                  : controller.signInWithApple(context),
+                              color: Colors.grey.shade900,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(32.0)),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0,
+                                  horizontal: 12.0,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (controller.signingInWithApple)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
+                                        child: SizedBox(
+                                          width: 18.0,
+                                          height: 18.0,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 3.0,
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
+                                        child: Image.asset(
+                                          'assets/icons/apple.png',
+                                          width: 18.0,
+                                          height: 18.0,
+                                        ),
+                                      ),
+                                    Text(
+                                      'Sign in with Apple',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         if (controller.isSignInWithGoogleSupported)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
@@ -87,6 +140,16 @@ class AuthenticationView extends StatelessWidget {
                                           child: CircularProgressIndicator(
                                             strokeWidth: 3.0,
                                           ),
+                                        ),
+                                      )
+                                    else
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
+                                        child: Image.asset(
+                                          'assets/icons/google.png',
+                                          width: 18.0,
+                                          height: 18.0,
                                         ),
                                       ),
                                     Text(
@@ -129,6 +192,16 @@ class AuthenticationView extends StatelessWidget {
                                           child: CircularProgressIndicator(
                                             strokeWidth: 3.0,
                                           ),
+                                        ),
+                                      )
+                                    else
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
+                                        child: Image.asset(
+                                          'assets/icons/facebook.png',
+                                          width: 18.0,
+                                          height: 18.0,
                                         ),
                                       ),
                                     Text(

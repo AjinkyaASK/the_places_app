@@ -23,7 +23,9 @@ class AuthController extends ChangeNotifier {
   })  : isSignInWithGoogleSupported =
             kIsWeb || Platform.isAndroid || Platform.isIOS,
         isSignInWithFacebookSupported =
-            kIsWeb || Platform.isAndroid || Platform.isIOS;
+            kIsWeb || Platform.isAndroid || Platform.isIOS,
+        isSignInWithAppleSupported =
+            !kIsWeb && (Platform.isIOS || Platform.isMacOS);
 
   final SignInAsGuestUseCase signInAsGuestUseCase;
   final SignInWithGoogleUseCase signInWithGoogleUseCase;
@@ -33,15 +35,18 @@ class AuthController extends ChangeNotifier {
   bool _isLoading = false;
   bool _isSigningInWithGoogle = false;
   bool _isSigningInWithFacebook = false;
+  bool _isSigningInWithApple = false;
   bool _isSigningInAsGuest = false;
 
   bool get loading => _isLoading;
   bool get signingInWithGoogle => _isSigningInWithGoogle;
   bool get signingInWithFacebook => _isSigningInWithFacebook;
+  bool get signingInWithApple => _isSigningInWithApple;
   bool get signingInAsGuest => _isSigningInAsGuest;
 
   final bool isSignInWithGoogleSupported;
   final bool isSignInWithFacebookSupported;
+  final bool isSignInWithAppleSupported;
 
   void refresh() => notifyListeners();
 
@@ -80,6 +85,16 @@ class AuthController extends ChangeNotifier {
           );
       },
     );
+  }
+
+  Future<void> signInWithApple(BuildContext context) async {
+    _isSigningInWithApple = true;
+    startLoading();
+
+    await Future.delayed(Duration(seconds: 3));
+
+    _isSigningInWithApple = false;
+    doneLoading();
   }
 
   Future<void> signInWithGoogle(BuildContext context) async {
