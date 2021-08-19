@@ -16,9 +16,11 @@ class RemoveFavoritePlacesUsecase
 
   @override
   Future<Either<Exception, void>> call(
-      {List<PlaceBase> places = const <PlaceBase>[]}) async {
+      {List<PlaceBase> places = const <PlaceBase>[],
+      bool removeAll = false}) async {
     try {
-      await repository.removeFavoritePlaces(places);
+      if (removeAll)
+        await repository.removeFavoritePlaces(places, removeAll: removeAll);
       return Right(null);
     } on Exception catch (exception) {
       return Left(exception);

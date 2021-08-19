@@ -45,8 +45,12 @@ class PlacesRepository extends PlacesRepositoryBase {
   }
 
   @override
-  Future<void> removeFavoritePlaces(List<PlaceBase> places) async {
-    datasourceLocal
-        .remove(List.unmodifiable(places.map((place) => place as Place)));
+  Future<void> removeFavoritePlaces(List<PlaceBase> places,
+      {bool removeAll = false}) async {
+    if (!removeAll)
+      datasourceLocal
+          .remove(List.unmodifiable(places.map((place) => place as Place)));
+    else
+      datasourceLocal.reset();
   }
 }

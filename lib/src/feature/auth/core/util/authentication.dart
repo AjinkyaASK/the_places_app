@@ -1,30 +1,50 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../data/datasource/local/user_datasource_local.dart';
+import '../../data/model/user.dart';
+import '../local_database_keys.dart';
+
 class Authentication {
-  static Future<FirebaseApp> init() async {
-    final FirebaseApp firebaseApp = await Firebase.initializeApp();
+  static final UserDatasourceLocal _datasourceLocal = UserDatasourceLocal();
 
-    final User? user = FirebaseAuth.instance.currentUser;
+  static Future<PlacesAppUser?> init() async {
+    final bool isGuest =
+        _datasourceLocal.get(UserLocalDatabaseKeys.guestSignedIn);
 
-    final bool isGuest = false; //TODO: Implement geust login mechanism
+    PlacesAppUser? placesAppUser;
 
-    if (isGuest || user != null) {
-      //TODO: navigate to the home screen
-    } else {
-      //TODO: navigate to the login screen
+    if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
+      final FirebaseApp firebaseApp = await Firebase.initializeApp();
+
+      final User? firebaseUser = FirebaseAuth.instance.currentUser;
+
+      if (firebaseUser != null)
+        placesAppUser = PlacesAppUser(
+            name: firebaseUser.displayName ?? '',
+            pictureUrl: firebaseUser.photoURL ?? '');
     }
 
-    return firebaseApp;
+    if (isGuest)
+      placesAppUser = PlacesAppUser(
+        isGuest: true,
+        name: 'Guest',
+        pictureUrl: '',
+      );
+
+    return placesAppUser;
   }
 
-  static Future<User?> signInWithGoogle(
+  static Future<PlacesAppUser?> signInWithGoogle(
       {required void Function(String message) onAuthFailure}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
     User? user;
+    PlacesAppUser? placesAppUser;
 
     if (kIsWeb) {
       final GoogleAuthProvider authProvider = GoogleAuthProvider();
@@ -73,18 +93,46 @@ class Authentication {
       }
     }
 
-    return user;
+    if (user != null)
+      placesAppUser = PlacesAppUser(
+        name: user.displayName ?? '',
+        pictureUrl: user.photoURL ?? '',
+      );
+
+    return placesAppUser;
   }
 
-  static Future<void> signOut(
-      {required void Function(String message) onSignOutFailure}) async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+  static Future<PlacesAppUser> signInAsGuest(
+      {required void Function(String message) onAuthFailure}) async {
+    await _datasourceLocal.set(
+      key: UserLocalDatabaseKeys.guestSignedIn,
+      value: true,
+    );
+    return PlacesAppUser(
+      isGuest: true,
+      name: 'Guest',
+      pictureUrl: '',
+    );
+  }
 
-    try {
-      if (!kIsWeb) await googleSignIn.signOut();
-      await FirebaseAuth.instance.signOut();
-    } catch (error) {
-      onSignOutFailure('Error signing out. Try again.');
+  static Future<void> signOut({
+    required void Function() onComplete,
+    required void Function(String message) onFailure,
+  }) async {
+    if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      try {
+        if (!kIsWeb) await googleSignIn.signOut();
+        await FirebaseAuth.instance.signOut();
+      } catch (error) {
+        onFailure('Error signing out. Try again.');
+      }
     }
+    if (_datasourceLocal.get(UserLocalDatabaseKeys.guestSignedIn))
+      await _datasourceLocal.set(
+        key: UserLocalDatabaseKeys.guestSignedIn,
+        value: false,
+      );
+    onComplete();
   }
 }

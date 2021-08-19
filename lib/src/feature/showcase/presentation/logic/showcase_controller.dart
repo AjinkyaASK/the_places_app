@@ -131,6 +131,23 @@ class ShowcaseController extends ChangeNotifier {
     );
   }
 
+  Future<void> removeAllFavorites() async {
+    final Either<Exception, void> result = await removeFavoritePlacesUsecase(
+      places: List.from([]),
+      removeAll: true,
+    );
+    result.fold(
+      (exception) {
+        flashError(exception.message ?? '');
+        refresh();
+      },
+      (done) {
+        _favoritePlaces.clear();
+        refresh();
+      },
+    );
+  }
+
   Future<void> loadPlaces(void Function() onComplete) async {
     startLoading();
 

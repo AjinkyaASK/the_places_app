@@ -1,15 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_places_app/src/feature/showcase/domain/usecase/remove_favorite_places_usecase.dart';
+import 'package:the_places_app/src/feature/auth/core/util/authentication.dart';
+import 'package:the_places_app/src/util/navigation/pages.dart';
+import 'package:the_places_app/src/util/navigation/router.dart';
 
 import '../../../../value/labels.dart';
+import '../../../auth/data/model/user.dart';
 import '../../data/datasource/local/places_datasource_local.dart';
 import '../../data/datasource/remote/places_datasource_remote.dart';
 import '../../data/model/place.dart';
 import '../../data/repository/repository.dart';
 import '../../domain/usecase/get_favorite_places_usecase.dart';
 import '../../domain/usecase/get_places_usecase.dart';
+import '../../domain/usecase/remove_favorite_places_usecase.dart';
 import '../../domain/usecase/set_places_usecase.dart';
 import '../logic/showcase_controller.dart';
 import 'detail_view.dart';
@@ -17,7 +21,12 @@ import 'widget/place_card.dart';
 import 'widget/swiping_card.dart';
 
 class ShowcaseView extends StatelessWidget {
-  ShowcaseView({Key? key}) : super(key: key);
+  ShowcaseView({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
+
+  final PlacesAppUser user;
 
   static final PlacesRepository _repository = PlacesRepository(
     datasourceLocal: PlacesDatasourceLocal(),
@@ -158,10 +167,9 @@ class ShowcaseView extends StatelessWidget {
               leading: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: CircleAvatar(
-                  //TODO: Put users picture here and make below child Null when picture is available
-                  // backgroundImage: AssetImage(
-                  //   ImageArtifacts.profilePlaceholder,
-                  // ),
+                  backgroundImage: user.pictureUrl.isEmpty
+                      ? null
+                      : CachedNetworkImageProvider(user.pictureUrl),
                   child: Icon(
                     Icons.person,
                     color: Colors.white,
@@ -328,7 +336,19 @@ class ShowcaseView extends StatelessWidget {
                       thickness: 1.0,
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await Authentication.signOut(onComplete: () async {
+                          await controller.removeAllFavorites();
+                          if (RouteManger.navigatorKey.currentState != null)
+                            RouteManger.navigatorKey.currentState!
+                                .pushNamedAndRemoveUntil(
+                              Pages.authentication,
+                              (route) => false,
+                            );
+                        }, onFailure: (message) {
+                          controller.flashError(message);
+                        });
+                      },
                       child: Container(
                         width: double.maxFinite,
                         alignment: Alignment.center,

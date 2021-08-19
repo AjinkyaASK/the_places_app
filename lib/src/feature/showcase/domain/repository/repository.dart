@@ -14,5 +14,6 @@ abstract class PlacesRepositoryBase {
   Future<List<PlaceBase>> getFavoritePlaces();
   Future<void> setPlaces(List<PlaceBase> places);
   Future<void> setFavoritePlaces(List<PlaceBase> places);
-  Future<void> removeFavoritePlaces(List<PlaceBase> places);
+  Future<void> removeFavoritePlaces(List<PlaceBase> places,
+      {bool removeAll = false});
 }
