@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # For Icons
   cupertino_icons: ^1.0.2
   
   # For Network Calls
@@ -26,10 +27,23 @@ dependencies:
   # For Local Database
   hive: ^2.0.4
   hive_flutter: ^1.1.0
+
+  # [path_provider] Required for hive
+  # path_provider: ^2.0.2
+  
+  # For State Management
   provider: ^5.0.0
+
+  # For network image caching
   cached_network_image: ^3.1.0
+
+  # For fetching dominant color from images
   palette_generator: ^0.3.0
+
+  # For handling url launches
   url_launcher: ^6.0.9
+  
+  # For Authentication and Social Logins
   firebase_auth: ^3.0.2
   firebase_core: ^1.5.0
   google_sign_in: ^5.0.7
@@ -38,8 +52,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  
+    # For code generators
   build_runner: ^2.1.1
+  
+  # For hive adapters
   hive_generator: ^1.1.0
+
+  # For mocking in unit testing
   mockito: ^5.0.14
     
 
@@ -48,4 +68,5 @@ flutter:
   uses-material-design: true
 
   assets:
+    # For the profile placeholder when image is not available
     - assets/images/profile_placeholder.png
