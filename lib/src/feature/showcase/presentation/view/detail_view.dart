@@ -4,18 +4,59 @@ import 'package:flutter/material.dart';
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
 import '../../../../util/url/url_utility.dart';
+import '../../../../value/strings.dart';
 import '../../core/api.dart';
 import '../../data/model/place.dart';
+import 'fullscreen_image_view.dart';
 
-class DetailView extends StatelessWidget {
-  const DetailView({
-    Key? key,
+///[_defaultForegroundColor] is used when foregroundColor is not passed as argument
+const _defaultForegroundColor = Colors.black;
+
+///[_defaultBackgroundColor] is used when foregroundColor is not passed as argument
+const _defaultBackgroundColor = Colors.white;
+
+///[_defaultExpandedHeight] is used as the extended height of sliver header
+const double _defaultExpandedHeight = 350.0;
+
+///[DetailViewParams] is the parameter class used when passing argument to
+///the [DetailView] widget
+class DetailViewParams {
+  DetailViewParams({
     required this.place,
-    this.foregroundColor = Colors.black,
-    this.backgroundColor = Colors.white,
     required this.onFavorite,
     required this.onFavoriteRemoved,
-  }) : super(key: key);
+    this.foregroundColor = _defaultForegroundColor,
+    this.backgroundColor = _defaultBackgroundColor,
+  });
+
+  ///[place] is the object of type [Place] that contains
+  ///details of the place to be shown in details view
+  final Place place;
+
+  ///[foregroundColor] is set as color of text, icons and buttons
+  final Color foregroundColor;
+
+  ///[backgroundColor] is set as background color of various elements
+  final Color backgroundColor;
+
+  ///[onFavorite] is executed when favorite button is pressed
+  final void Function() onFavorite;
+
+  ///[onFavoriteRemoved] is executed when remove favorite button is pressed
+  final void Function() onFavoriteRemoved;
+}
+
+///[DetailView] is the widget that shows details for any place
+class DetailView extends StatelessWidget {
+  DetailView({
+    Key? key,
+    required final DetailViewParams params,
+  })  : place = params.place,
+        foregroundColor = params.foregroundColor,
+        backgroundColor = params.backgroundColor,
+        onFavorite = params.onFavorite,
+        onFavoriteRemoved = params.onFavoriteRemoved,
+        super(key: key);
 
   final Place place;
   final Color foregroundColor;
@@ -33,7 +74,7 @@ class DetailView extends StatelessWidget {
               pinned: true,
               delegate: HeaderDelegate(
                 collapsedHeight: kToolbarHeight,
-                expandedHeight: 350.0,
+                expandedHeight: _defaultExpandedHeight,
                 title: place.name,
                 foregroundColor: foregroundColor,
                 backgroundColor: backgroundColor,
@@ -44,14 +85,15 @@ class DetailView extends StatelessWidget {
                 onFavorite: onFavorite,
                 onFavoriteRemoved: onFavoriteRemoved,
                 onHeaderTapped: () {
+                  // Navigating user to full screen image view
                   if (RouteManger.navigatorKey.currentState != null)
                     RouteManger.navigatorKey.currentState!.pushNamed(
                       Pages.fullScreenImageView,
-                      arguments: {
-                        'url': PlacesApi.dummyPictureUrl,
-                        'heroTag': place.id,
-                        'cacheKey': place.id.toString(),
-                      },
+                      arguments: FullscreenImageViewParams(
+                        url: PlacesApi.dummyPictureUrl,
+                        heroTag: place.id,
+                        cacheKey: place.id.toString(),
+                      ),
                     );
                 },
               ),
@@ -63,7 +105,7 @@ class DetailView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
+                    // Place Title
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: Hero(
@@ -84,7 +126,7 @@ class DetailView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // State
+                    // State and Country
                     Hero(
                       tag: '${place.name}${place.state}${place.country}',
                       transitionOnUserGestures: true,
@@ -133,9 +175,10 @@ class DetailView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Actions
+                    // Actions (Wiki + Maps)
                     Row(
                       children: [
+                        // including Maps Button into widget tree only when there is a link
                         if (place.googleMapsLink != null)
                           Expanded(
                             child: MaterialButton(
@@ -165,7 +208,7 @@ class DetailView extends StatelessWidget {
                                     ),
                                     Flexible(
                                       child: Text(
-                                        'Wiki',
+                                        Strings.wikiButton,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style:
@@ -177,11 +220,13 @@ class DetailView extends StatelessWidget {
                               ),
                             ),
                           ),
+                        // A spacer when there both buttons are available
                         if (place.wikipediaLink != null &&
                             place.googleMapsLink != null)
                           const SizedBox(
                             width: 16.0,
                           ),
+                        // including Wiki Button into widget tree only when there is a link
                         if (place.wikipediaLink != null)
                           Expanded(
                             child: MaterialButton(
@@ -211,7 +256,7 @@ class DetailView extends StatelessWidget {
                                     ),
                                     Flexible(
                                       child: Text(
-                                        'Maps',
+                                        Strings.mapsButton,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style:
@@ -225,7 +270,7 @@ class DetailView extends StatelessWidget {
                           ),
                       ],
                     ),
-                    // Details
+                    // Other Details
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Table(
@@ -263,6 +308,8 @@ class DetailView extends StatelessWidget {
   }
 }
 
+///[HeaderDelegate] used as [SliverPersistentHeaderDelegate] for
+///the sliver persistent header used
 class HeaderDelegate extends SliverPersistentHeaderDelegate {
   HeaderDelegate({
     required this.collapsedHeight,
@@ -279,17 +326,42 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.onFavoriteRemoved,
   });
 
+  ///[foregroundColor] sets the color of text and icons
   final Color foregroundColor;
+
+  ///[backgroundColor] sets the background color of header
   final Color backgroundColor;
+
+  ///[title] is the text title of the header
   final String title;
+
+  ///Network path of the image shown in the background
   final String? backgroundImageUrl;
+
+  ///[collapsedHeight] is the height of the header when it is fully collapsed
   final double collapsedHeight;
+
+  ///[expandedHeight] is the height of the header when it is fully expanded
   final double expandedHeight;
+
+  ///[backgroundImageCacheKey] is used by network image widget to identify the cache uniquely
+  ///this is optional
   final String? backgroundImageCacheKey;
+
+  ///[backgroundImageHeroTag] used by hero widget for continuos transition effect
+  ///this is optional
   final Object? backgroundImageHeroTag;
+
+  ///[place] object of class [Place]
   final Place place;
+
+  ///[onHeaderTapped] called when the header is tapped
   final void Function()? onHeaderTapped;
+
+  ///[onFavorite] called when favorite happens
   final void Function() onFavorite;
+
+  ///[onFavoriteRemoved] called when remove favorite happens
   final void Function() onFavoriteRemoved;
 
   @override
@@ -300,9 +372,11 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    /// Always passing true (Not the best practice but okay for current application)
     return true;
   }
 
+  ///[getProcessedShrinkOffset] mehod gives offset value between 0 and 1
   double getProcessedShrinkOffset(double shrinkOffset) {
     return (1 - shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
   }

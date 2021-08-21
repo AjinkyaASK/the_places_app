@@ -1,35 +1,44 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/artifacts/image_artifacts.dart';
+import '../../../../../value/strings.dart';
+
+const double _maxWidth = 260.0;
+const EdgeInsets _defaultPadding = const EdgeInsets.symmetric(
+  horizontal: 32.0,
+  vertical: 16.0,
+);
+
+///[NoInternetWidget] is the widget shown when
+///there is no internet connection
 class NoInternetWidget extends StatelessWidget {
   const NoInternetWidget({
     Key? key,
     required this.onRetry,
   }) : super(key: key);
 
+  ///[onRetry] called when user taps on `Retry` button
   final void Function() onRetry;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 32.0,
-          vertical: 16.0,
-        ),
+        padding: _defaultPadding,
         child: Container(
           constraints: BoxConstraints(
-            maxWidth: 260.0,
+            maxWidth: _maxWidth,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(
-                'assets/images/no_connection.png',
+                ImageArtifacts.noConnection,
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  "Seems there's no internet connection.",
+                  Strings.noInternetConnectionTitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28.0,
@@ -41,7 +50,7 @@ class NoInternetWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 24.0),
                 child: Text(
-                  'Please check your internet connection and try again.',
+                  Strings.noInternetConnectionDescription,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black54,
@@ -60,7 +69,7 @@ class NoInternetWidget extends StatelessWidget {
                     vertical: 16.0,
                   ),
                   child: Text(
-                    'Retry',
+                    Strings.retryButton,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.0,

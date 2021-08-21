@@ -1,28 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:the_places_app/src/feature/showcase/presentation/view/fullscreen_image_view.dart';
 
+import '../../core/exception/general_exception.dart';
 import '../../feature/auth/data/model/user.dart';
 import '../../feature/auth/presentation/view/auth_view.dart';
-import '../../feature/showcase/data/model/place.dart';
 import '../../feature/showcase/presentation/view/detail_view.dart';
+import '../../feature/showcase/presentation/view/fullscreen_image_view.dart';
 import '../../feature/showcase/presentation/view/showcase_view.dart';
 import '../../widget/error_view.dart';
 import 'pages.dart';
 
+///[RouteManger] is the helper class used by the [MaterialApp] widget
+///for various routing oprations and practices
 class RouteManger {
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+  static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
+  ///[navigatorKey] is the global key used for by router for navigation
+  static GlobalKey<NavigatorState> get navigatorKey => navigatorKey;
+
+  ///[generateRoute] receives the navigation calls and processes them
   static Route<dynamic> generateRoute({
     required RouteSettings settings,
     required PlacesAppUser? user,
   }) {
-    final Object? args = settings.arguments;
-
     switch (settings.name) {
       case Pages.home:
+
+        /// Checking if the object user is not null, before redirecting to home
         if (user != null)
-          return MaterialPageRoute(builder: (_) => ShowcaseView(user: user));
+          return MaterialPageRoute(
+            builder: (_) => ShowcaseView(
+              params: ShowcaseViewParams(
+                user: user,
+              ),
+            ),
+          );
+
+        /// When it's null, redirecting to authentication screen instead
         else
           return MaterialPageRoute(builder: (_) => AuthenticationView());
 
@@ -30,49 +44,59 @@ class RouteManger {
         return MaterialPageRoute(builder: (_) => AuthenticationView());
 
       case Pages.placesShowcase:
+        if (!(settings.arguments is ShowcaseViewParams))
+          throw GeneralException(
+            source: 'Router',
+            message:
+                'When navigating to Pages.placesShowcase, expected object of type ShowcaseViewParams, received something else.',
+          );
         return MaterialPageRoute(
-            builder: (_) => ShowcaseView(
-                  user: args as PlacesAppUser,
-                ));
+          builder: (_) => ShowcaseView(
+            params: settings.arguments as ShowcaseViewParams,
+          ),
+        );
 
       case Pages.placeDetails:
-        if (args is Map<String, dynamic> &&
-            args.containsKey('place') &&
-            args['place'] is Place &&
-            args.containsKey('onFavorite') &&
-            args['onFavorite'] is void Function() &&
-            args.containsKey('onFavoriteRemoved') &&
-            args['onFavoriteRemoved'] is void Function())
-          return MaterialPageRoute(
-            builder: (_) => DetailView(
-              place: args['place'],
-              onFavorite: args['onFavorite'],
-              onFavoriteRemoved: args['onFavoriteRemoved'],
-            ),
+        if (!(settings.arguments is DetailViewParams))
+          throw GeneralException(
+            source: 'Router',
+            message:
+                'When navigating to Pages.placeDetails, expected object of type DetailViewParams, received something else.',
           );
-        return _errorRoute;
+        return MaterialPageRoute(
+          builder: (_) => DetailView(
+            params: settings.arguments as DetailViewParams,
+          ),
+        );
 
       case Pages.fullScreenImageView:
-        if (args is Map<String, dynamic> &&
-            args.containsKey('url') &&
-            args['url'] is String)
-          return MaterialPageRoute(
-            builder: (_) => FullscreenImageView(
-              url: args['url'],
-              heroTag: args.containsKey('heroTag') ? args['heroTag'] : null,
-              cacheKey: args.containsKey('cacheKey') ? args['cacheKey'] : null,
-            ),
+        if (!(settings.arguments is FullscreenImageViewParams))
+          throw GeneralException(
+            source: 'Router',
+            message:
+                'When navigating to Pages.fullScreenImageView, expected object of type FullscreenImageViewParams, received something else.',
           );
-        return _errorRoute;
+        return MaterialPageRoute(
+          builder: (_) => FullscreenImageView(
+            params: settings.arguments as FullscreenImageViewParams,
+          ),
+        );
 
       default:
+
+        /// Routing to the error route considering that
+        /// the app does not support requested route
+        print('App does not support requested route');
         return _errorRoute;
     }
   }
 
+  ///[_errorRoute] is a private page route object that navigates
+  ///to the [ErrorView] with some messages
   static MaterialPageRoute get _errorRoute => MaterialPageRoute(
-      builder: (_) => ErrorView(
-            title: 'Navigation Error',
-            message: '404',
-          ));
+        builder: (_) => ErrorView(
+          title: 'Navigation Error',
+          message: '404',
+        ),
+      );
 }

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
 import '../../../../util/network/network_helper.dart';
-import '../../../../value/labels.dart';
+import '../../../../value/strings.dart';
 import '../../../auth/data/model/user.dart';
 import '../../core/api.dart';
 import '../../data/datasource/local/places_datasource_local.dart';
@@ -18,17 +18,31 @@ import '../../domain/usecase/get_places_usecase.dart';
 import '../../domain/usecase/remove_favorite_places_usecase.dart';
 import '../../domain/usecase/set_places_usecase.dart';
 import '../logic/showcase_controller.dart';
+import 'detail_view.dart';
+import 'widget/material_chip.dart';
 import 'widget/no_internet.dart';
 import 'widget/place_card.dart';
 import 'widget/swiping_card.dart';
 
 final List<Widget> _placeCards = <Widget>[];
 
+/// This class [ShowcaseViewParams] serves as a helper class
+/// to pass parameters to the view
+class ShowcaseViewParams {
+  ShowcaseViewParams({
+    required this.user,
+  });
+
+  final PlacesAppUser user;
+}
+
+/// [ShowcaseView] is the actual widget of the showcase view
 class ShowcaseView extends StatelessWidget {
   ShowcaseView({
     Key? key,
-    required this.user,
-  }) : super(key: key);
+    required final ShowcaseViewParams params,
+  })  : user = params.user,
+        super(key: key);
 
   final PlacesAppUser user;
 
@@ -43,78 +57,101 @@ class ShowcaseView extends StatelessWidget {
     removeFavoritePlacesUsecase: RemoveFavoritePlacesUsecase(_repository),
   );
 
+  /// This method [_buildAndGetCards] builds place cards
   List<Widget> _buildAndGetCards({
     required BuildContext context,
     required List<Place> places,
   }) {
     final List<Widget> cards = <Widget>[];
 
-    double marginTop = 54;
-    const double marginToReduce = 18;
+    // This is the maximum margin cards will have vertically
+    double marginTop = 108;
 
+    // This is the difference dremented from top margin (to achieve to vertical stack effect)
+    const double marginToDecrement = 36;
+
+    // This is the opacity of card
     double opacity = 1.0;
+
+    // This is the scale of card
     double scale = 1.0;
 
+    // Index of current card
     int index = 0;
 
+    // Calculating Scale and Opacity of card based on index
     for (final place in places.reversed) {
+      final margin = marginTop - marginToDecrement;
+
       switch (index) {
         case 0:
+          // Making first card at full scale and opacity
           scale = 1.0;
           opacity = 1.0;
           break;
 
         case 1:
+          // Making second card at ~half scale and opacity
           scale = 0.875;
           opacity = 0.675;
           break;
 
         case 2:
+          // Making third card at ~one forth scale and opacity
           scale = 0.75;
           opacity = 0.35;
           break;
 
         default:
+          // Making rest of the cards invisible by making scale and opacity zero
           scale = 0.0;
           opacity = 0.0;
           break;
       }
 
+      // Building and adding card to the list
       cards.add(
-        Positioned(
-          top: marginTop - marginToReduce,
+        Container(
+          // top margin is set by the margin subtracted by the decrement value
+          margin: EdgeInsets.only(
+            top: margin > 0 ? margin : 0,
+          ),
           child: SwipingCard(
+            // Navigating to details screen on tap of the card
             onTap: () {
               if (RouteManger.navigatorKey.currentState != null)
-                RouteManger.navigatorKey.currentState!
-                    .pushNamed(Pages.placeDetails, arguments: {
-                  'place': place,
-                  'onFavorite': () {
-                    _controller.onFavorite(
-                      place: place,
-                      onComplete: () {
-                        _placeCards.clear();
-                        _placeCards.addAll(_buildAndGetCards(
-                          context: context,
-                          places: _controller.places,
-                        ));
-                      },
-                    );
-                  },
-                  'onFavoriteRemoved': () {
-                    _controller.onFavoriteRemoved(
-                      place: place,
-                      onComplete: () {
-                        _placeCards.clear();
-                        _placeCards.addAll(_buildAndGetCards(
-                          context: context,
-                          places: _controller.places,
-                        ));
-                      },
-                    );
-                  },
-                });
+                RouteManger.navigatorKey.currentState!.pushNamed(
+                  Pages.placeDetails,
+                  arguments: DetailViewParams(
+                    place: place,
+                    onFavorite: () {
+                      _controller.onFavorite(
+                        place: place,
+                        onComplete: () {
+                          _placeCards.clear();
+                          _placeCards.addAll(_buildAndGetCards(
+                            context: context,
+                            places: _controller.places,
+                          ));
+                        },
+                      );
+                    },
+                    onFavoriteRemoved: () {
+                      _controller.onFavoriteRemoved(
+                        place: place,
+                        onComplete: () {
+                          _placeCards.clear();
+                          _placeCards.addAll(_buildAndGetCards(
+                            context: context,
+                            places: _controller.places,
+                          ));
+                        },
+                      );
+                    },
+                  ),
+                );
             },
+            // Marking place as favorite and removing from the list
             onSwipeRight: () {
               _controller.onFavorite(
                 place: place,
@@ -127,6 +164,7 @@ class ShowcaseView extends StatelessWidget {
                 },
               );
             },
+            // Removing place from the list
             onSwipeLeft: () {
               _controller.onRemoved(
                 place: place,
@@ -143,9 +181,11 @@ class ShowcaseView extends StatelessWidget {
               place: place,
               opacity: opacity,
               scale: scale,
+              // Marking place as favorite and removing from the list on click of heart icon
               onFavorite: () {
                 _controller.onFavorite(
                   place: place,
+                  // Upadating the cards list
                   onComplete: () {
                     _placeCards.clear();
                     _placeCards.addAll(_buildAndGetCards(
@@ -160,13 +200,17 @@ class ShowcaseView extends StatelessWidget {
         ),
       );
 
+      // Updating the index
       index++;
-      marginTop -= marginToReduce;
+
+      // Subtracting the decrement margin from marginTop
+      marginTop -= marginToDecrement;
     }
 
     return cards;
   }
 
+  /// The [_loaderWidget] shown when the places data is being fetched
   Widget get _loaderWidget => const Center(
         child: SizedBox(
           width: 48.0,
@@ -175,6 +219,7 @@ class ShowcaseView extends StatelessWidget {
         ),
       );
 
+  /// The method [_showProfileDialog] which shows profile dialog with user details and sign out button
   void _showProfileDialog({
     required BuildContext context,
     required ShowcaseController controller,
@@ -183,6 +228,7 @@ class ShowcaseView extends StatelessWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
+            /// Keeping all padding zero for end to end content space
             contentPadding: EdgeInsets.zero,
             actionsPadding: EdgeInsets.zero,
             buttonPadding: EdgeInsets.zero,
@@ -193,6 +239,7 @@ class ShowcaseView extends StatelessWidget {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                /// Dialog close button
                 IconButton(
                   onPressed: () {
                     if (RouteManger.navigatorKey.currentState != null)
@@ -207,7 +254,6 @@ class ShowcaseView extends StatelessWidget {
             ),
             content: Container(
               width: 150.0,
-              // height: 150.0,
               decoration: BoxDecoration(
                 color: Colors.white,
               ),
@@ -268,6 +314,7 @@ class ShowcaseView extends StatelessWidget {
               ),
             ),
             actions: [
+              /// Signout button
               TextButton(
                 onPressed: controller.onSignOut,
                 child: Container(
@@ -275,7 +322,7 @@ class ShowcaseView extends StatelessWidget {
                   alignment: Alignment.center,
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Logout',
+                    Strings.signOutButton,
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
@@ -290,6 +337,7 @@ class ShowcaseView extends StatelessWidget {
     return ChangeNotifierProvider<ShowcaseController>(
       create: (_) => _controller
         ..init(() {
+          /// Building the cards widget list on completion of data fetch
           _placeCards.clear();
           _placeCards.addAll(_buildAndGetCards(
             context: context,
@@ -301,7 +349,7 @@ class ShowcaseView extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                Labels.appName,
+                Strings.appName,
                 style: TextStyle(color: Colors.black),
               ),
               centerTitle: true,
@@ -331,6 +379,8 @@ class ShowcaseView extends StatelessWidget {
             endDrawer: Theme(
               data: Theme.of(context).copyWith(
                 canvasColor: Colors.transparent,
+
+                /// For the rounded corners at left side
               ),
               child: Drawer(
                 child: Container(
@@ -348,7 +398,7 @@ class ShowcaseView extends StatelessWidget {
                         title: Row(
                           children: [
                             Text(
-                              'Favorites',
+                              Strings.favoritesTitle,
                               style: TextStyle(
                                 color: Colors.black,
                               ),
@@ -366,7 +416,9 @@ class ShowcaseView extends StatelessWidget {
                       Expanded(
                         child: controller.favoritePlaces.isEmpty
                             ? Center(
-                                child: Text('No favorite places to show'),
+                                child: Text(Strings.noFavoritesFound),
+
+                                /// Message telling user that there are no favorite places stored
                               )
                             : ListView.separated(
                                 itemCount: controller.favoritePlaces.length,
@@ -377,6 +429,7 @@ class ShowcaseView extends StatelessWidget {
                                   final Place place =
                                       controller.favoritePlaces[index];
                                   return Dismissible(
+                                    /// For swipe to dismiss the place card
                                     direction: DismissDirection.endToStart,
                                     background: Container(
                                       color: Colors.grey.shade300,
@@ -405,43 +458,48 @@ class ShowcaseView extends StatelessWidget {
                                       }
                                     },
                                     child: ListTile(
+                                      /// This is to open the place in details view on tap
                                       onTap: () {
                                         if (RouteManger
                                                 .navigatorKey.currentState !=
                                             null)
                                           RouteManger.navigatorKey.currentState!
-                                              .pushNamed(Pages.placeDetails,
-                                                  arguments: {
-                                                'place': place,
-                                                'onFavorite': () {
-                                                  _controller.onFavorite(
-                                                    place: place,
-                                                    onComplete: () {
-                                                      _placeCards.clear();
-                                                      _placeCards.addAll(
-                                                          _buildAndGetCards(
-                                                        context: context,
-                                                        places:
-                                                            _controller.places,
-                                                      ));
-                                                    },
-                                                  );
-                                                },
-                                                'onFavoriteRemoved': () {
-                                                  _controller.onFavoriteRemoved(
-                                                    place: place,
-                                                    onComplete: () {
-                                                      _placeCards.clear();
-                                                      _placeCards.addAll(
-                                                          _buildAndGetCards(
-                                                        context: context,
-                                                        places:
-                                                            _controller.places,
-                                                      ));
-                                                    },
-                                                  );
-                                                },
-                                              });
+                                              .pushNamed(
+                                            Pages.placeDetails,
+                                            arguments: DetailViewParams(
+                                              place: place,
+                                              // This is required to update the list when a place is added to favorites
+                                              onFavorite: () {
+                                                _controller.onFavorite(
+                                                  place: place,
+                                                  onComplete: () {
+                                                    _placeCards.clear();
+                                                    _placeCards.addAll(
+                                                        _buildAndGetCards(
+                                                      context: context,
+                                                      places:
+                                                          _controller.places,
+                                                    ));
+                                                  },
+                                                );
+                                              },
+                                              // This is required to update the list when a place is removed from favorites
+                                              onFavoriteRemoved: () {
+                                                _controller.onFavoriteRemoved(
+                                                  place: place,
+                                                  onComplete: () {
+                                                    _placeCards.clear();
+                                                    _placeCards.addAll(
+                                                        _buildAndGetCards(
+                                                      context: context,
+                                                      places:
+                                                          _controller.places,
+                                                    ));
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          );
                                       },
                                       leading: Hero(
                                         tag: place.id,
@@ -451,9 +509,6 @@ class ShowcaseView extends StatelessWidget {
                                             //TODO: Need to replace below url with actual one
                                             PlacesApi.dummyPictureUrl,
                                             cacheKey: place.id.toString(),
-                                            // fit: BoxFit.cover,
-                                            // placeholder: (context, url) =>
-                                            //     Container(color: Colors.grey),
                                           ),
                                         ),
                                       ),
@@ -465,71 +520,14 @@ class ShowcaseView extends StatelessWidget {
                                       ),
                                       subtitle: Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          margin:
-                                              const EdgeInsets.only(top: 4.0),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(16.0),
-                                            color:
-                                                Colors.black.withOpacity(0.65),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0,
-                                              vertical: 4.0,
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 4.0),
-                                                  child: Icon(
-                                                    Icons.location_pin,
-                                                    size: 14.0,
-                                                    color: Colors.white
-                                                        .withOpacity(0.8),
-                                                  ),
-                                                ),
-                                                Flexible(
-                                                  child: Material(
-                                                    type: MaterialType
-                                                        .transparency,
-                                                    child: Text(
-                                                      '${place.state}, ${place.country}',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headline6!
-                                                          .copyWith(
-                                                            decoration:
-                                                                TextDecoration
-                                                                    .none,
-                                                            color: Colors.white,
-                                                            fontSize: 12.0,
-                                                            fontWeight:
-                                                                FontWeight.w300,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                        child: MaterialChip(
+                                          icon: Icons.location_pin,
+                                          label:
+                                              '${place.state}, ${place.country}',
+                                          backgroundColor:
+                                              Colors.black.withOpacity(0.75),
                                         ),
                                       ),
-                                      // trailing: IconButton(
-                                      //   onPressed: () async {
-                                      //     await controller.onFavoriteRemoved(
-                                      //       place: place,
-                                      //       onComplete: () {},
-                                      //     );
-                                      //   },
-                                      //   icon: Icon(Icons.close),
-                                      // ),
                                     ),
                                   );
                                 },
@@ -543,19 +541,30 @@ class ShowcaseView extends StatelessWidget {
             body: controller.loading
                 ? _loaderWidget
                 : FutureBuilder<bool>(
+                    /// Future that tells if internet connectivity is available
                     future: NetworkHelper.isConnected,
                     builder: (context, snapshot) {
                       if (!snapshot.hasError && snapshot.hasData) {
                         if (snapshot.data ?? false) {
                           if (_placeCards.isEmpty)
+
+                            /// When there are no places
                             return Center(
-                              child: Text('No places to show'),
+                              child: Text(Strings.noPlacesFound),
                             );
-                          return Stack(
+
+                          /// When there are some places to show
+                          return Container(
                             alignment: Alignment.center,
-                            children: _placeCards.reversed.toList(),
+                            padding: EdgeInsets.only(bottom: 72.0),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: _placeCards.reversed.toList(),
+                            ),
                           );
                         }
+
+                        /// When there is no connectivity
                         return NoInternetWidget(
                           onRetry: () async {
                             await controller.loadPlaces(() {
@@ -568,9 +577,11 @@ class ShowcaseView extends StatelessWidget {
                           },
                         );
                       } else {
+                        /// When there is something wrong
                         return _loaderWidget;
                       }
-                    }),
+                    },
+                  ),
           );
         },
       ),

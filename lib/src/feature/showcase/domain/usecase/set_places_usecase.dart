@@ -8,6 +8,9 @@ import '../../../../core/usecase/usecase_base.dart';
 import '../entity/place.dart';
 import '../repository/repository.dart';
 
+///[SetPlacesUsecase] takes list of places
+///to store in the local database
+///or object of [GeneralException] if something is wrong
 class SetPlacesUsecase implements UsecaseBase<Either<Exception, void>> {
   SetPlacesUsecase(this.repository);
 
@@ -23,6 +26,7 @@ class SetPlacesUsecase implements UsecaseBase<Either<Exception, void>> {
       ));
 
     try {
+      //Calling repository method [setFavoritePlaces] to set favorite place into local storage
       await repository.setFavoritePlaces(places);
       return Right(null);
     } on Exception catch (exception) {

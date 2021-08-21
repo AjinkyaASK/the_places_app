@@ -95,7 +95,9 @@ class AuthController extends ChangeNotifier {
           RouteManger.navigatorKey.currentState!.pushNamedAndRemoveUntil(
             Pages.placesShowcase,
             (route) => false,
-            arguments: user,
+            arguments: ShowcaseViewParams(
+              user: user as PlacesAppUser,
+            ),
           );
       },
     );
@@ -134,13 +136,10 @@ class AuthController extends ChangeNotifier {
         _isSigningInWithGoogle = false;
         doneLoading();
         if (RouteManger.navigatorKey.currentState != null)
-          RouteManger.navigatorKey.currentState!.pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (_) => ShowcaseView(
-                user: user!,
-              ),
-            ),
+          RouteManger.navigatorKey.currentState!.pushNamedAndRemoveUntil(
+            Pages.placesShowcase,
             (route) => false,
+            arguments: ShowcaseViewParams(user: user!),
           );
       } else {
         onAuthFailure(
@@ -176,13 +175,10 @@ class AuthController extends ChangeNotifier {
         _isSigningInWithFacebook = false;
         doneLoading();
         if (RouteManger.navigatorKey.currentState != null)
-          RouteManger.navigatorKey.currentState!.pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (_) => ShowcaseView(
-                user: user!,
-              ),
-            ),
+          RouteManger.navigatorKey.currentState!.pushNamedAndRemoveUntil(
+            Pages.placesShowcase,
             (route) => false,
+            arguments: ShowcaseViewParams(user: user!),
           );
       } else {
         onAuthFailure(
@@ -213,13 +209,12 @@ class AuthController extends ChangeNotifier {
         _isSigningInWithTwitter = false;
         doneLoading();
         if (RouteManger.navigatorKey.currentState != null)
-          RouteManger.navigatorKey.currentState!.pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (_) => ShowcaseView(
-                user: user!,
-              ),
-            ),
+          RouteManger.navigatorKey.currentState!.pushNamedAndRemoveUntil(
+            Pages.placesShowcase,
             (route) => false,
+            arguments: ShowcaseViewParams(
+              user: user!,
+            ),
           );
       } else {
         onAuthFailure(

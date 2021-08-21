@@ -7,19 +7,31 @@ import '../../core/exception/network_exception.dart';
 import 'network_request.dart';
 import 'network_response.dart';
 
+/// [NetworkHelper] is a helper class that provides various methods
+/// usefull for network related operations
 class NetworkHelper {
+  /// [isConnected] is a getter that tells if internet connection is available
+  /// returns boolean future, as `true` when connectivity is available
+  /// and `false` when not
   static Future<bool> get isConnected async {
     try {
       final result = await InternetAddress.lookup('example.com');
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } on SocketException catch (_) {
+      /// No internet
       return false;
-    } catch (e) {
-      print('Error while checking internet connection');
+    } catch (error) {
+      print('Error while checking internet connection $error');
+
+      /// Unexpected error thrown
       return false;
     }
   }
 
+  /// The method [request] is used for creating HTTP Requests
+  /// such as a GET or POST request, takes object of type [NetworkRequest]
+  /// Returns a furue of type [NetworkResponse] when request was successfull
+  /// throws exception of type [NetworkException] when something is wrong
   static Future<NetworkResponse> request(NetworkRequest request) async {
     try {
       final Uri url = Uri.parse(request.requestUrl);
@@ -65,6 +77,7 @@ class NetworkHelper {
     }
   }
 
+  ///[_get] is an private method used by [request] method for HTTP Get request
   static Future<NetworkResponse> _get({
     required final Uri url,
     final Map<String, String>? params,
@@ -83,6 +96,7 @@ class NetworkHelper {
     );
   }
 
+  ///[_post] is an private method used by [request] method for HTTP Post request
   static Future<NetworkResponse> _post({
     required final Uri url,
     final Map<String, String>? params,

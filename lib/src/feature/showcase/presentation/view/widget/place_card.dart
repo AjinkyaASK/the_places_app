@@ -5,7 +5,20 @@ import 'package:palette_generator/palette_generator.dart';
 import '../../../../../util/url/url_utility.dart';
 import '../../../core/api.dart';
 import '../../../data/model/place.dart';
+import 'material_chip.dart';
 
+const double _defaultShadowOpacity = 0.25;
+const double _defaultBorderRadius = 8.0;
+const double _defaultCardElevation = 8.0;
+const Duration _defaultAnimationDuration = Duration(milliseconds: 250);
+const Color _defaultCardColor = Colors.white;
+const double _defaultMaxWidthFactor = 0.85;
+const double _defaultMinWidthFactor = 0.5;
+const double _defaultMinHeightFactor = 0.5;
+const double _defaultMaxHeightFactor = 0.75;
+const double _defaultCardPadding = 24.0;
+
+///[PlaceCard] is the widget used inside swiping cards to showcase place details
 class PlaceCard extends StatefulWidget {
   PlaceCard({
     Key? key,
@@ -15,9 +28,16 @@ class PlaceCard extends StatefulWidget {
     required this.onFavorite,
   }) : super(key: key);
 
+  ///[place] is object of type [Place] that contains details of the place
   final Place place;
+
+  ///[opacity] is applied to entire card, default value is 1.0
   final double opacity;
+
+  ///[scale] is applied to entire card, default value is 1.0
   final double scale;
+
+  ///[onFavorite] is called when user taps on the favorite button
   final void Function() onFavorite;
 
   @override
@@ -28,9 +48,10 @@ class _PlaceCardState extends State<PlaceCard> {
   Color foregroundColor = Colors.black;
   Color backgroundColor = Colors.white;
 
-  Future<void> loadColorDataFromImage(String url) async {
-    Color color = Colors.black;
-
+  ///[_loadColorDataFromImage] loads the network image and
+  ///devices colors based on it's dominant color
+  ///uses [PaletteGenerator] library
+  Future<void> _loadColorDataFromImage(String url) async {
     final PaletteGenerator paletteGenerator =
         await PaletteGenerator.fromImageProvider(
       //TODO: Need to replace below url with actual one
@@ -40,14 +61,18 @@ class _PlaceCardState extends State<PlaceCard> {
         cacheKey: widget.place.id.toString(),
       ),
 
+      ///[size] indicates size of the image
       size: Size(720, 1280),
 
+      ///[region] indicates position and size of the region to be considered
       region: Offset.zero & Size(450, 450),
     );
 
     final Color dominantBGColor =
         (paletteGenerator.dominantColor?.color) ?? backgroundColor;
 
+    ///Calcalating the luminance of the dominant color
+    ///and setting foreground and background color based on it
     if (dominantBGColor.computeLuminance() < 0.5) {
       foregroundColor = Colors.white;
       backgroundColor = Colors.black;
@@ -57,7 +82,7 @@ class _PlaceCardState extends State<PlaceCard> {
   @override
   void initState() {
     super.initState();
-    loadColorDataFromImage(PlacesApi.dummyPictureUrl).then((color) {
+    _loadColorDataFromImage(PlacesApi.dummyPictureUrl).then((color) {
       setState(() {});
     });
   }
@@ -69,53 +94,57 @@ class _PlaceCardState extends State<PlaceCard> {
       scale: widget.scale,
       alignment: Alignment.topCenter,
       child: Card(
-        elevation: 8.0,
-        color: Colors.white,
-        shadowColor: Colors.grey.shade300.withOpacity(0.25),
+        elevation: _defaultCardElevation,
+        color: _defaultCardColor,
+        shadowColor: Colors.grey.shade300.withOpacity(_defaultShadowOpacity),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(_defaultBorderRadius),
         ),
         clipBehavior: Clip.antiAlias,
         child: AnimatedOpacity(
           opacity: widget.opacity,
-          duration: Duration(milliseconds: 250),
+          duration: _defaultAnimationDuration,
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 250),
+            duration: _defaultAnimationDuration,
             curve: Curves.ease,
             width: double.maxFinite,
             height: double.maxFinite,
             constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.8,
-              maxHeight: MediaQuery.of(context).size.height * 0.775,
-              minWidth: MediaQuery.of(context).size.width * 0.5,
-              minHeight: MediaQuery.of(context).size.height * 0.5,
+              minHeight:
+                  MediaQuery.of(context).size.height * _defaultMinHeightFactor,
+              maxWidth:
+                  MediaQuery.of(context).size.width * _defaultMaxWidthFactor,
+              minWidth:
+                  MediaQuery.of(context).size.width * _defaultMinWidthFactor,
+              maxHeight:
+                  MediaQuery.of(context).size.height * _defaultMaxHeightFactor,
             ),
-            color: Colors.green,
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Opacity(
-                  opacity: 1.0,
-                  child: Hero(
-                    tag: widget.place.id,
-                    child: CachedNetworkImage(
-                      cacheKey: widget.place.id.toString(),
-                      //TODO: Need to replace below url with actual one
-                      imageUrl: PlacesApi.dummyPictureUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          Container(color: Colors.grey),
-                    ),
+                // Background Image
+                Hero(
+                  tag: widget.place.id,
+                  child: CachedNetworkImage(
+                    cacheKey: widget.place.id.toString(),
+                    //TODO: Need to replace below url with actual one
+                    imageUrl: PlacesApi.dummyPictureUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Container(color: Colors.grey.shade400),
                   ),
                 ),
+                // Details
                 Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(_defaultCardPadding),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Maps and Favorite Button
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          // Google Maps Button
                           if (widget.place.googleMapsLink != null)
                             Padding(
                               padding: const EdgeInsets.only(right: 16.0),
@@ -140,6 +169,7 @@ class _PlaceCardState extends State<PlaceCard> {
                                 ),
                               ),
                             ),
+                          // Favorite Button
                           Hero(
                             tag: 'fav${widget.place.id}',
                             transitionOnUserGestures: true,
@@ -167,6 +197,7 @@ class _PlaceCardState extends State<PlaceCard> {
                           ),
                         ],
                       ),
+                      // Place Name
                       Padding(
                         padding: const EdgeInsets.only(
                           top: 16.0,
@@ -192,53 +223,16 @@ class _PlaceCardState extends State<PlaceCard> {
                           ),
                         ),
                       ),
+                      // State and Country
                       Hero(
                         tag:
                             '${widget.place.name}${widget.place.state}${widget.place.country}',
                         transitionOnUserGestures: true,
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 16.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.0),
-                            color: foregroundColor.withOpacity(0.75),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                              vertical: 4.0,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 4.0),
-                                  child: Icon(
-                                    Icons.location_pin,
-                                    size: 14.0,
-                                    color: backgroundColor.withOpacity(0.8),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Material(
-                                    type: MaterialType.transparency,
-                                    child: Text(
-                                      '${widget.place.state}, ${widget.place.country}',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline6!
-                                          .copyWith(
-                                            decoration: TextDecoration.none,
-                                            color: backgroundColor,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        child: MaterialChip(
+                          icon: Icons.location_pin,
+                          label:
+                              '${widget.place.state}, ${widget.place.country}',
+                          backgroundColor: Colors.black.withOpacity(0.75),
                         ),
                       ),
                     ],

@@ -6,16 +6,34 @@ import '../../domain/entity/place.dart';
 
 part 'place.g.dart';
 
+///[Place] is the class that contains details of a place
 @HiveType(typeId: 0)
 class Place extends PlaceBase {
   Place({
+    ///[id] is the unique id of the place
     @HiveField(0) required final int id,
+
+    ///[name] is the name of the place
     @HiveField(1) required final String name,
+
+    ///[state] is the state of the place
     @HiveField(2) required final String state,
+
+    ///[country] is the country of the place
     @HiveField(3) required final String country,
+
+    ///[countryShort] is the short format of country of the place
     @HiveField(4) required final String countryShort,
+
+    ///[wikipediaLink] is link to the wikipedia page of the place
+    ///this is optional
     @HiveField(5) final String? wikipediaLink,
+
+    ///[googleMapsLink] is link to the google map location of the place
+    ///this is optional
     @HiveField(6) final String? googleMapsLink,
+
+    ///[favorite] indicates if the place is stored as favorite
     @HiveField(7) bool favorite = false,
   }) : super(
           id: id,
@@ -28,6 +46,10 @@ class Place extends PlaceBase {
           favorite: favorite,
         );
 
+  ///[Place.fromMap] takes an object of [Map<String, dynamic>]
+  ///and returns an initialized bject of this class
+  ///throws exceptino of type [GeneralException] if any mandatory argument
+  ///is not present in the given map
   factory Place.fromMap(Map<String, dynamic> data) {
     assert(
         data.containsKey(PlacesApi.labels.id),
@@ -103,6 +125,7 @@ class Place extends PlaceBase {
     }
   }
 
+  ///[toMap] returns an object of type [Map<String, dynamic>] with the details
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       PlacesApi.labels.id: id,
@@ -115,6 +138,8 @@ class Place extends PlaceBase {
     };
   }
 
+  ///List of objects returned by [props] indicates
+  ///decides equility of the object
   @override
   List<Object?> get props => [id];
 }
