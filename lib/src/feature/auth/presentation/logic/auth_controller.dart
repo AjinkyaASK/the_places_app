@@ -3,15 +3,16 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../data/model/user.dart';
 
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
 import '../../../showcase/core/messages.dart';
 import '../../../showcase/presentation/view/showcase_view.dart';
+import '../../data/model/user.dart';
 import '../../domain/usecase/sign_in_as_guest_usecase.dart';
 import '../../domain/usecase/sign_in_with_facebook_usecase.dart';
 import '../../domain/usecase/sign_in_with_google_usecase.dart';
+import '../../domain/usecase/sign_in_with_twitter_usecase.dart';
 import '../../domain/usecase/sign_out_usecase.dart';
 
 class AuthController extends ChangeNotifier {
@@ -19,36 +20,45 @@ class AuthController extends ChangeNotifier {
     required this.signInAsGuestUseCase,
     required this.signInWithGoogleUseCase,
     required this.signInWithFacebookUseCase,
+    required this.signInWithTwitterUseCase,
     required this.signOutUseCase,
   })  : isSignInWithGoogleSupported =
             kIsWeb || Platform.isAndroid || Platform.isIOS,
         isSignInWithFacebookSupported =
             kIsWeb || Platform.isAndroid || Platform.isIOS,
         isSignInWithAppleSupported =
-            !kIsWeb && (Platform.isIOS || Platform.isMacOS);
+            !kIsWeb && (Platform.isIOS || Platform.isMacOS),
+        isSignInWithTwitterSupported =
+            kIsWeb || Platform.isAndroid || Platform.isIOS;
 
   final SignInAsGuestUseCase signInAsGuestUseCase;
   final SignInWithGoogleUseCase signInWithGoogleUseCase;
   final SignInWithFacebookUseCase signInWithFacebookUseCase;
+  final SignInWithTwitterUseCase signInWithTwitterUseCase;
   final SignOutUseCase signOutUseCase;
 
   bool _isLoading = false;
+  bool _isSigningInAsGuest = false;
   bool _isSigningInWithGoogle = false;
   bool _isSigningInWithFacebook = false;
   bool _isSigningInWithApple = false;
-  bool _isSigningInAsGuest = false;
+  bool _isSigningInWithTwitter = false;
 
   bool get loading => _isLoading;
+  bool get signingInAsGuest => _isSigningInAsGuest;
   bool get signingInWithGoogle => _isSigningInWithGoogle;
   bool get signingInWithFacebook => _isSigningInWithFacebook;
   bool get signingInWithApple => _isSigningInWithApple;
-  bool get signingInAsGuest => _isSigningInAsGuest;
+  bool get signingInWithTwitter => _isSigningInWithTwitter;
 
   final bool isSignInWithGoogleSupported;
   final bool isSignInWithFacebookSupported;
   final bool isSignInWithAppleSupported;
+  final bool isSignInWithTwitterSupported;
 
   void refresh() => notifyListeners();
+
+  void flashError({required BuildContext context, required String message}) {}
 
   void startLoading() {
     _isLoading = true;
@@ -65,6 +75,10 @@ class AuthController extends ChangeNotifier {
     required String message,
   }) {
     print(message);
+    flashError(
+      context: context,
+      message: message,
+    );
   }
 
   Future<void> signInAsGuest(BuildContext context) async {
@@ -91,6 +105,7 @@ class AuthController extends ChangeNotifier {
     _isSigningInWithApple = true;
     startLoading();
 
+    // TODO: Implement this
     await Future.delayed(Duration(seconds: 3));
 
     _isSigningInWithApple = false;
@@ -107,7 +122,14 @@ class AuthController extends ChangeNotifier {
       ),
     );
 
-    result.fold((exception) {}, (user) {
+    result.fold((exception) {
+      _isSigningInWithGoogle = false;
+      doneLoading();
+      onAuthFailure(
+        context: context,
+        message: exception.message ?? ShowcaseMessages.BlanketErrorMessage,
+      );
+    }, (user) {
       if ((user as PlacesAppUser?) != null) {
         _isSigningInWithGoogle = false;
         doneLoading();
@@ -142,7 +164,14 @@ class AuthController extends ChangeNotifier {
       ),
     );
 
-    result.fold((exception) {}, (user) {
+    result.fold((exception) {
+      _isSigningInWithFacebook = false;
+      doneLoading();
+      onAuthFailure(
+        context: context,
+        message: exception.message ?? ShowcaseMessages.BlanketErrorMessage,
+      );
+    }, (user) {
       if ((user as PlacesAppUser?) != null) {
         _isSigningInWithFacebook = false;
         doneLoading();
@@ -164,6 +193,46 @@ class AuthController extends ChangeNotifier {
         doneLoading();
       }
     });
+  }
+
+  Future<void> signInWithTwitter(BuildContext context) async {
+    _isSigningInWithTwitter = true;
+    startLoading();
+
+    final result = await signInWithTwitterUseCase();
+
+    result.fold((exception) {
+      _isSigningInWithTwitter = false;
+      doneLoading();
+      onAuthFailure(
+        context: context,
+        message: exception.message ?? ShowcaseMessages.BlanketErrorMessage,
+      );
+    }, (user) {
+      if ((user as PlacesAppUser?) != null) {
+        _isSigningInWithTwitter = false;
+        doneLoading();
+        if (RouteManger.navigatorKey.currentState != null)
+          RouteManger.navigatorKey.currentState!.pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => ShowcaseView(
+                user: user!,
+              ),
+            ),
+            (route) => false,
+          );
+      } else {
+        onAuthFailure(
+          context: context,
+          message: ShowcaseMessages.BlanketErrorMessage,
+        );
+        _isSigningInWithTwitter = false;
+        doneLoading();
+      }
+    });
+
+    _isSigningInWithTwitter = false;
+    doneLoading();
   }
 
   Future<void> signOut(BuildContext context) async {

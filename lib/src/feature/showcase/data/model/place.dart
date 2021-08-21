@@ -16,7 +16,7 @@ class Place extends PlaceBase {
     @HiveField(4) required final String countryShort,
     @HiveField(5) final String? wikipediaLink,
     @HiveField(6) final String? googleMapsLink,
-    @HiveField(7) final bool favorite = false,
+    @HiveField(7) bool favorite = false,
   }) : super(
           id: id,
           name: name,

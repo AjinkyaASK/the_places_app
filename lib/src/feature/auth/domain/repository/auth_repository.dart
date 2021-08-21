@@ -10,6 +10,7 @@ abstract class AuthRepositoryBase {
       {required void Function(String message) onAuthFailure});
   Future<PlacesAppUserBase?> signInWithFacebook(
       {required void Function(String message) onAuthFailure});
+  Future<PlacesAppUserBase?> signInWithTwitter();
   Future<PlacesAppUserBase> signInAsGuest();
   Future<void> signOut();
 }

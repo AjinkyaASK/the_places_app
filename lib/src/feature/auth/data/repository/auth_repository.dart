@@ -5,7 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:twitter_login/twitter_login.dart';
 
+import '../../../../config/twitter_api_config.dart';
 import '../../../../core/exception/general_exception.dart';
 import '../../core/local_database_keys.dart';
 import '../../data/datasource/local/user_datasource_local.dart';
@@ -56,9 +58,10 @@ class AuthRepository implements AuthRepositoryBase {
     return placesAppUser;
   }
 
+  @override
   Future<PlacesAppUser?> signInWithGoogle(
       {required void Function(String message) onAuthFailure}) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     User? user;
     PlacesAppUser? placesAppUser;
@@ -123,12 +126,18 @@ class AuthRepository implements AuthRepositoryBase {
     return placesAppUser;
   }
 
+  @override
   Future<PlacesAppUser?> signInWithFacebook(
       {required void Function(String message) onAuthFailure}) async {
     final LoginResult result = await FacebookAuth.instance.login();
 
     if (result.status == LoginStatus.success) {
-      final AccessToken accessToken = result.accessToken!;
+      final FirebaseAuth auth = FirebaseAuth.instance;
+      final String accessToken = result.accessToken!.token;
+      final OAuthCredential credential =
+          FacebookAuthProvider.credential(accessToken);
+      final UserCredential userCredential =
+          await auth.signInWithCredential(credential);
 
       final Map<String, dynamic> userData =
           await FacebookAuth.instance.getUserData();
@@ -139,9 +148,60 @@ class AuthRepository implements AuthRepositoryBase {
             as Map<String, dynamic>)['url'],
       );
       return placesAppUser;
+    } else {
+      print('Signing in with Facebook failed: ${result.message}');
     }
   }
 
+  @override
+  Future<PlacesAppUser?> signInWithTwitter() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+
+    final TwitterLogin twitterLogin = TwitterLogin(
+      apiKey: TwitterApiConfig.apiKey,
+      apiSecretKey: TwitterApiConfig.apiSecret,
+      redirectURI: TwitterApiConfig.redirectUrl,
+    );
+    final authResult = await twitterLogin.login();
+
+    switch (authResult.status) {
+      case TwitterLoginStatus.loggedIn:
+        if (authResult.authToken != null &&
+            authResult.authTokenSecret != null &&
+            authResult.user != null) {
+          final OAuthCredential credential = TwitterAuthProvider.credential(
+            accessToken: authResult.authToken!,
+            secret: authResult.authTokenSecret!,
+          );
+          await auth.signInWithCredential(credential);
+          return PlacesAppUser(
+            name: authResult.user!.name,
+            pictureUrl: authResult.user!.thumbnailImage,
+          );
+        }
+        break;
+
+      case TwitterLoginStatus.error:
+        throw GeneralException(
+          source: 'AuthRepository',
+          message: 'Signing in with Twitter failed with error',
+        );
+
+      case TwitterLoginStatus.cancelledByUser:
+        throw GeneralException(
+          source: 'AuthRepository',
+          message: 'Signing in with Twitter cancelled by user',
+        );
+
+      default:
+        throw GeneralException(
+          source: 'AuthRepository',
+          message: 'Signing in with Twitter failed due to unknown reason',
+        );
+    }
+  }
+
+  @override
   Future<PlacesAppUser> signInAsGuest() async {
     try {
       await datasource.set(
@@ -162,6 +222,7 @@ class AuthRepository implements AuthRepositoryBase {
     }
   }
 
+  @override
   Future<void> signOut() async {
     if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
       final GoogleSignIn googleSignIn = GoogleSignIn();

@@ -342,32 +342,43 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
                       color: foregroundColor,
                     ),
                   ),
-                  Hero(
-                    tag: 'fav${place.id}',
-                    transitionOnUserGestures: true,
-                    child: MaterialButton(
-                      onPressed:
-                          place.favorite ? onFavoriteRemoved : onFavorite,
-                      minWidth: 0.0,
-                      elevation: 0.0,
-                      padding: const EdgeInsets.all(12.0),
-                      shape: CircleBorder(),
-                      // color: foregroundColor.withOpacity(0.75),
-                      child: SizedBox(
-                        width: 32.0,
-                        height: 32.0,
-                        child: Center(
-                          child: Icon(
-                            Icons.favorite,
-                            size: 24.0,
-                            color: place.favorite
-                                ? Colors.pink.shade400
-                                : foregroundColor.withOpacity(0.75),
+                  StatefulBuilder(builder: (context, refresh) {
+                    return Hero(
+                      tag: 'fav${place.id}',
+                      transitionOnUserGestures: true,
+                      child: MaterialButton(
+                        onPressed: () {
+                          if (place.favorite) {
+                            onFavoriteRemoved();
+                          } else {
+                            onFavorite();
+                          }
+                          place.favorite = !place.favorite;
+                          refresh(() {});
+                        },
+                        minWidth: 0.0,
+                        elevation: 0.0,
+                        padding: const EdgeInsets.all(12.0),
+                        shape: CircleBorder(),
+                        // color: foregroundColor.withOpacity(0.75),
+                        child: SizedBox(
+                          width: 32.0,
+                          height: 32.0,
+                          child: Center(
+                            child: Icon(
+                              place.favorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_outline,
+                              size: 24.0,
+                              color: place.favorite
+                                  ? Colors.pink.shade400
+                                  : foregroundColor.withOpacity(0.75),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                 ],
               ),
             ),

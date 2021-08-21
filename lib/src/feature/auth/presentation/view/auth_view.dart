@@ -6,6 +6,7 @@ import '../../data/repository/auth_repository.dart';
 import '../../domain/usecase/sign_in_as_guest_usecase.dart';
 import '../../domain/usecase/sign_in_with_facebook_usecase.dart';
 import '../../domain/usecase/sign_in_with_google_usecase.dart';
+import '../../domain/usecase/sign_in_with_twitter_usecase.dart';
 import '../../domain/usecase/sign_out_usecase.dart';
 import '../logic/auth_controller.dart';
 
@@ -17,6 +18,7 @@ class AuthenticationView extends StatelessWidget {
     signInAsGuestUseCase: SignInAsGuestUseCase(_authRepository),
     signInWithGoogleUseCase: SignInWithGoogleUseCase(_authRepository),
     signInWithFacebookUseCase: SignInWithFacebookUseCase(_authRepository),
+    signInWithTwitterUseCase: SignInWithTwitterUseCase(_authRepository),
     signOutUseCase: SignOutUseCase(_authRepository),
   );
 
@@ -206,6 +208,59 @@ class AuthenticationView extends StatelessWidget {
                                       ),
                                     Text(
                                       'Sign in with Facebook',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        //TODO: the false is added in condition to make Sign in twitter unavailable (due to the API account issue)
+                        if (false && controller.isSignInWithTwitterSupported)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: MaterialButton(
+                              onPressed: () => controller.loading
+                                  ? null
+                                  : controller.signInWithTwitter(context),
+                              color: Colors.grey.shade900,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(32.0)),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0,
+                                  horizontal: 12.0,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (controller.signingInWithTwitter)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
+                                        child: SizedBox(
+                                          width: 18.0,
+                                          height: 18.0,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 3.0,
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12.0),
+                                        child: Image.asset(
+                                          'assets/icons/twitter.png',
+                                          width: 18.0,
+                                          height: 18.0,
+                                        ),
+                                      ),
+                                    Text(
+                                      'Sign in with Twitter',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.normal,
