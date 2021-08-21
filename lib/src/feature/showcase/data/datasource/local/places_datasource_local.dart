@@ -4,10 +4,12 @@ import '../../../../../core/exception/general_exception.dart';
 import '../../../domain/entity/datasource.dart';
 import '../../model/place.dart';
 
+///[PlacesDatasourceLocal] is the datasource for local database
 class PlacesDatasourceLocal extends PlacesDatasource {
   static const String _placesBoxLabel = 'places_box_hive';
   static late final Box<Place> _placesBox;
 
+  ///[init] method initializes the [_placesBox] object and opens makes it ready for connection
   static Future<void> init() async {
     try {
       _placesBox = await Hive.openBox<Place>(_placesBoxLabel);
@@ -17,6 +19,7 @@ class PlacesDatasourceLocal extends PlacesDatasource {
     }
   }
 
+  ///[dispose] method closes the [_placesBox]
   static Future<void> dispose() async {
     if (_placesBox.isOpen)
       await _placesBox.close();
@@ -28,6 +31,7 @@ class PlacesDatasourceLocal extends PlacesDatasource {
       );
   }
 
+  ///[_initializationCheck] method checks if the box is open and throws error if it is not
   void _initializationCheck() {
     //TODO: Handle this error in better way
     if (!_placesBox.isOpen)
@@ -38,6 +42,7 @@ class PlacesDatasourceLocal extends PlacesDatasource {
       );
   }
 
+  ///[get] method returns list of places stored in local database
   @override
   Future<List<Place>> get() async {
     _initializationCheck();
@@ -46,6 +51,7 @@ class PlacesDatasourceLocal extends PlacesDatasource {
     return response;
   }
 
+  ///[reset] method clears all places stored in local database
   @override
   Future<List<Place>> reset() async {
     _initializationCheck();
@@ -57,6 +63,7 @@ class PlacesDatasourceLocal extends PlacesDatasource {
     return places;
   }
 
+  ///[set] method stores list of places in the local database
   @override
   Future<void> set(List<Place> places) async {
     _initializationCheck();
@@ -65,6 +72,7 @@ class PlacesDatasourceLocal extends PlacesDatasource {
     }
   }
 
+  ///[remove] method removes given list of places stored in local database
   @override
   Future<void> remove(List<Place> places) async {
     _initializationCheck();

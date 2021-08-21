@@ -6,6 +6,9 @@ import '../../../../core/usecase/usecase_base.dart';
 import '../entity/user.dart';
 import '../repository/auth_repository.dart';
 
+///[SignInAsGuestUseCase] signs in the user as a Guest
+///returns object of type `PlacesAppUserBase`
+///or object of [GeneralException] if something is wrong
 class SignInAsGuestUseCase
     implements UsecaseBase<Either<Exception, PlacesAppUserBase>> {
   SignInAsGuestUseCase(this.repository);
@@ -15,6 +18,7 @@ class SignInAsGuestUseCase
   @override
   Future<Either<Exception, PlacesAppUserBase>> call() async {
     try {
+      //Calling repository method [signInAsGuest] to initiate sign in process
       final user = await repository.signInAsGuest();
       return Right(user);
     } catch (error) {

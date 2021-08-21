@@ -1,5 +1,6 @@
 import 'exception.dart';
 
+///[GeneralException] is used as a exception
 class GeneralException extends Exception {
   GeneralException({
     required final String source,

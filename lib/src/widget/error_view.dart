@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+///[ErrorView] is the widget that is shown when something is wrong
 class ErrorView extends StatelessWidget {
   const ErrorView({
     Key? key,

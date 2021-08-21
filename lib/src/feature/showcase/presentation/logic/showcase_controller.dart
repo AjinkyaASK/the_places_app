@@ -5,9 +5,9 @@ import '../../../../core/exception/exception.dart';
 import '../../../../core/exception/general_exception.dart';
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
+import '../../../../value/strings.dart';
 import '../../../auth/data/datasource/local/user_datasource_local.dart';
 import '../../../auth/data/repository/auth_repository.dart';
-import '../../core/messages.dart';
 import '../../data/model/place.dart';
 import '../../domain/entity/place.dart';
 import '../../domain/usecase/get_favorite_places_usecase.dart';
@@ -202,7 +202,7 @@ class ShowcaseController extends ChangeNotifier {
 
     response.fold(
       (Exception exception) {
-        flashError(exception.message ?? ShowcaseMessages.BlanketErrorMessage);
+        flashError(exception.message ?? Strings.blanketErrorMessage);
         onComplete();
         doneLoading();
       },
@@ -225,7 +225,7 @@ class ShowcaseController extends ChangeNotifier {
 
     response.fold(
       (Exception exception) {
-        flashError(exception.message ?? ShowcaseMessages.BlanketErrorMessage);
+        flashError(exception.message ?? Strings.blanketErrorMessage);
         doneLoading();
       },
       (List<PlaceBase> places) {
@@ -252,9 +252,9 @@ class ShowcaseController extends ChangeNotifier {
           (route) => false,
         );
     } on GeneralException catch (exception) {
-      flashError(exception.message ?? ShowcaseMessages.BlanketErrorMessage);
+      flashError(exception.message ?? Strings.blanketErrorMessage);
     } catch (error) {
-      flashError(ShowcaseMessages.BlanketErrorMessage);
+      flashError(Strings.blanketErrorMessage);
     }
   }
 }

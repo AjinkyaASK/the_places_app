@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
-import '../../../showcase/core/messages.dart';
+import '../../../../value/strings.dart';
 import '../../../showcase/presentation/view/showcase_view.dart';
 import '../../data/model/user.dart';
 import '../../domain/usecase/sign_in_as_guest_usecase.dart';
@@ -129,7 +129,7 @@ class AuthController extends ChangeNotifier {
       doneLoading();
       onAuthFailure(
         context: context,
-        message: exception.message ?? ShowcaseMessages.BlanketErrorMessage,
+        message: exception.message ?? Strings.blanketErrorMessage,
       );
     }, (user) {
       if ((user as PlacesAppUser?) != null) {
@@ -144,7 +144,7 @@ class AuthController extends ChangeNotifier {
       } else {
         onAuthFailure(
           context: context,
-          message: ShowcaseMessages.BlanketErrorMessage,
+          message: Strings.blanketErrorMessage,
         );
         _isSigningInWithGoogle = false;
         doneLoading();
@@ -168,7 +168,7 @@ class AuthController extends ChangeNotifier {
       doneLoading();
       onAuthFailure(
         context: context,
-        message: exception.message ?? ShowcaseMessages.BlanketErrorMessage,
+        message: exception.message ?? Strings.blanketErrorMessage,
       );
     }, (user) {
       if ((user as PlacesAppUser?) != null) {
@@ -183,7 +183,7 @@ class AuthController extends ChangeNotifier {
       } else {
         onAuthFailure(
           context: context,
-          message: ShowcaseMessages.BlanketErrorMessage,
+          message: Strings.blanketErrorMessage,
         );
         _isSigningInWithFacebook = false;
         doneLoading();
@@ -202,7 +202,7 @@ class AuthController extends ChangeNotifier {
       doneLoading();
       onAuthFailure(
         context: context,
-        message: exception.message ?? ShowcaseMessages.BlanketErrorMessage,
+        message: exception.message ?? Strings.blanketErrorMessage,
       );
     }, (user) {
       if ((user as PlacesAppUser?) != null) {
@@ -219,7 +219,7 @@ class AuthController extends ChangeNotifier {
       } else {
         onAuthFailure(
           context: context,
-          message: ShowcaseMessages.BlanketErrorMessage,
+          message: Strings.blanketErrorMessage,
         );
         _isSigningInWithTwitter = false;
         doneLoading();

@@ -9,25 +9,35 @@ import 'package:twitter_login/twitter_login.dart';
 
 import '../../../../config/twitter_api_config.dart';
 import '../../../../core/exception/general_exception.dart';
-import '../../core/local_database_keys.dart';
+import '../../../../value/strings.dart';
+import '../../core/auth_database_keys.dart';
 import '../../data/datasource/local/user_datasource_local.dart';
 import '../../data/model/user.dart';
 import '../../domain/repository/auth_repository.dart';
 
+///[AuthRepository] contains methods for Authentication module
 class AuthRepository implements AuthRepositoryBase {
   AuthRepository(this.datasource);
 
   final UserDatasourceLocal datasource;
 
+  ///[init] method initializes the local datasource and check if user
+  ///is signed in either as a Guest, Google or Facebook User
+  ///initializes the returns the user object if user is signed in
+  ///else returns null
   static Future<PlacesAppUser?> init(UserDatasourceLocal datasource) async {
-    final bool isGuest = datasource.get(UserLocalDatabaseKeys.guestSignedIn);
+    // Check if user is signed in as a guest
+    final bool isGuest = datasource.get(AuthLocalDatabaseKeys.guestSignedIn);
 
     PlacesAppUser? placesAppUser;
-
+    // Check for Google / Facebook sign in
     if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
       final FirebaseApp firebaseApp = await Firebase.initializeApp();
 
+      // Check if user signed in with Google/Firebase
       final User? firebaseUser = FirebaseAuth.instance.currentUser;
+
+      // Check if user signed in with Facebook
       final AccessToken? facebookAccessToken =
           await FacebookAuth.instance.accessToken;
 
@@ -43,10 +53,11 @@ class AuthRepository implements AuthRepositoryBase {
             await FacebookAuth.instance.getUserData();
 
         placesAppUser = PlacesAppUser(
-          name: userData['name'],
-          email: userData['email'],
-          pictureUrl: ((userData['picture'] as Map<String, dynamic>)['data']
-              as Map<String, dynamic>)['url'],
+          name: userData[AuthLocalDatabaseKeys.name],
+          email: userData[AuthLocalDatabaseKeys.email],
+          pictureUrl: ((userData[AuthLocalDatabaseKeys.picture]
+                  as Map<String, dynamic>)[AuthLocalDatabaseKeys.data]
+              as Map<String, dynamic>)[AuthLocalDatabaseKeys.url],
         );
       }
     }
@@ -54,13 +65,14 @@ class AuthRepository implements AuthRepositoryBase {
     if (placesAppUser == null && isGuest)
       placesAppUser = PlacesAppUser(
         isGuest: true,
-        name: 'Guest',
+        name: Strings.guestUserName,
         pictureUrl: '',
       );
 
     return placesAppUser;
   }
 
+  ///[signInWithGoogle] method used to sign in using Google
   @override
   Future<PlacesAppUser?> signInWithGoogle(
       {required void Function(String message) onAuthFailure}) async {
@@ -130,6 +142,7 @@ class AuthRepository implements AuthRepositoryBase {
     return placesAppUser;
   }
 
+  ///[signInWithFacebook] method used to sign in using Facebook
   @override
   Future<PlacesAppUser?> signInWithFacebook(
       {required void Function(String message) onAuthFailure}) async {
@@ -147,10 +160,11 @@ class AuthRepository implements AuthRepositoryBase {
           await FacebookAuth.instance.getUserData();
 
       final placesAppUser = PlacesAppUser(
-        name: userData['name'],
-        email: userData['email'],
-        pictureUrl: ((userData['picture'] as Map<String, dynamic>)['data']
-            as Map<String, dynamic>)['url'],
+        name: userData[AuthLocalDatabaseKeys.name],
+        email: userData[AuthLocalDatabaseKeys.email],
+        pictureUrl: ((userData[AuthLocalDatabaseKeys.picture]
+                as Map<String, dynamic>)[AuthLocalDatabaseKeys.data]
+            as Map<String, dynamic>)[AuthLocalDatabaseKeys.url],
       );
       return placesAppUser;
     } else {
@@ -158,6 +172,7 @@ class AuthRepository implements AuthRepositoryBase {
     }
   }
 
+  ///[signInWithTwitter] method used to sign in using Twitter (Not Integrated)
   @override
   Future<PlacesAppUser?> signInWithTwitter() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
@@ -206,27 +221,29 @@ class AuthRepository implements AuthRepositoryBase {
     }
   }
 
+  ///[signInAsGuest] method used to sign in as a Guest
   @override
   Future<PlacesAppUser> signInAsGuest() async {
     try {
       await datasource.set(
-        key: UserLocalDatabaseKeys.guestSignedIn,
+        key: AuthLocalDatabaseKeys.guestSignedIn,
         value: true,
       );
       final user = PlacesAppUser(
         isGuest: true,
-        name: 'Guest',
+        name: Strings.guestUserName,
         pictureUrl: '',
       );
       return user;
     } catch (error) {
       throw GeneralException(
-        source: 'source',
-        message: 'Error signing in as a guest',
+        source: 'AuthRepository',
+        message: Strings.guestSignInErrorMessage,
       );
     }
   }
 
+  ///[signOut] method used to sign out from all signed in account
   @override
   Future<void> signOut() async {
     if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
@@ -242,9 +259,9 @@ class AuthRepository implements AuthRepositoryBase {
         );
       }
     }
-    if (datasource.get(UserLocalDatabaseKeys.guestSignedIn))
+    if (datasource.get(AuthLocalDatabaseKeys.guestSignedIn))
       await datasource.set(
-        key: UserLocalDatabaseKeys.guestSignedIn,
+        key: AuthLocalDatabaseKeys.guestSignedIn,
         value: false,
       );
   }

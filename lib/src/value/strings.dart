@@ -2,6 +2,9 @@
 class Strings {
   /// General
   static const String appName = 'The Places App';
+  static const String blanketErrorMessage = 'Oops! Please try again.';
+  static const String guestUserName = 'Guest';
+  static const String guestSignInErrorMessage = 'Error signing in as a guest';
 
   /// For Showcase Screen
   static const String favoritesTitle = 'Favorites';
