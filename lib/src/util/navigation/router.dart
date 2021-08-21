@@ -18,7 +18,7 @@ class RouteManger {
   static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
   ///[navigatorKey] is the global key used for by router for navigation
-  static GlobalKey<NavigatorState> get navigatorKey => navigatorKey;
+  static GlobalKey<NavigatorState> get navigatorKey => _navigatorKey;
 
   ///[generateRoute] receives the navigation calls and processes them
   static Route<dynamic> generateRoute({
