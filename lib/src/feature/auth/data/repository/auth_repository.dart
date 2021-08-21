@@ -44,6 +44,7 @@ class AuthRepository implements AuthRepositoryBase {
 
         placesAppUser = PlacesAppUser(
           name: userData['name'],
+          email: userData['email'],
           pictureUrl: ((userData['picture'] as Map<String, dynamic>)['data']
               as Map<String, dynamic>)['url'],
         );
@@ -122,6 +123,7 @@ class AuthRepository implements AuthRepositoryBase {
     if (user != null)
       placesAppUser = PlacesAppUser(
         name: user.displayName ?? '',
+        email: user.email,
         pictureUrl: user.photoURL ?? '',
       );
 

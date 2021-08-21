@@ -54,6 +54,7 @@ class ShowcaseController extends ChangeNotifier {
 
   void flashError(String message) {
     //TODO: Implement something that flashes error
+    print(message);
   }
 
   void flashSuccess() {

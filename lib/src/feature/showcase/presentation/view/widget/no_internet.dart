@@ -50,10 +50,10 @@ class NoInternetWidget extends StatelessWidget {
               ),
               MaterialButton(
                 onPressed: onRetry,
-                color: Colors.green,
+                color: Colors.grey.shade900,
                 elevation: 0.0,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
+                    borderRadius: BorderRadius.circular(32.0)),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24.0,

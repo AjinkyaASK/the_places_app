@@ -187,6 +187,9 @@ class ShowcaseView extends StatelessWidget {
             actionsPadding: EdgeInsets.zero,
             buttonPadding: EdgeInsets.zero,
             titlePadding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -317,7 +320,7 @@ class ShowcaseView extends StatelessWidget {
                     child: user.pictureUrl.isEmpty
                         ? Icon(
                             Icons.person,
-                            color: Colors.white,
+                            color: Colors.white30,
                           )
                         : null,
                     backgroundColor: Colors.grey.shade800,
@@ -325,159 +328,215 @@ class ShowcaseView extends StatelessWidget {
                 ),
               ),
             ),
-            endDrawer: Drawer(
-              child: Container(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    AppBar(
-                      title: Row(
-                        children: [
-                          Text(
-                            'Favorites',
-                            style: TextStyle(
-                              color: Colors.black,
+            endDrawer: Theme(
+              data: Theme.of(context).copyWith(
+                canvasColor: Colors.transparent,
+              ),
+              child: Drawer(
+                child: Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24.0),
+                      bottomLeft: Radius.circular(24.0),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      AppBar(
+                        title: Row(
+                          children: [
+                            Text(
+                              'Favorites',
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
                             ),
+                          ],
+                        ),
+                        centerTitle: false,
+                        actions: [
+                          IconButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: Icon(Icons.close),
                           ),
                         ],
                       ),
-                      centerTitle: false,
-                      actions: [
-                        IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: Icon(Icons.close),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: controller.favoritePlaces.isEmpty
-                          ? Center(
-                              child: Text('No favorite places to show'),
-                            )
-                          : ListView.separated(
-                              itemCount: controller.favoritePlaces.length,
-                              separatorBuilder: (context, index) => Divider(),
-                              itemBuilder: (context, index) {
-                                final Place place =
-                                    controller.favoritePlaces[index];
-                                return ListTile(
-                                  onTap: () {
-                                    if (RouteManger.navigatorKey.currentState !=
-                                        null)
-                                      RouteManger.navigatorKey.currentState!
-                                          .pushNamed(Pages.placeDetails,
-                                              arguments: {
-                                            'place': place,
-                                            'onFavorite': () {
-                                              _controller.onFavorite(
-                                                place: place,
-                                                onComplete: () {
-                                                  _placeCards.clear();
-                                                  _placeCards
-                                                      .addAll(_buildAndGetCards(
-                                                    context: context,
-                                                    places: _controller.places,
-                                                  ));
-                                                },
-                                              );
-                                            },
-                                            'onFavoriteRemoved': () {
-                                              _controller.onFavoriteRemoved(
-                                                place: place,
-                                                onComplete: () {
-                                                  _placeCards.clear();
-                                                  _placeCards
-                                                      .addAll(_buildAndGetCards(
-                                                    context: context,
-                                                    places: _controller.places,
-                                                  ));
-                                                },
-                                              );
-                                            },
-                                          });
-                                  },
-                                  leading: Hero(
-                                    tag: place.id,
-                                    child: CircleAvatar(
-                                      backgroundImage:
-                                          CachedNetworkImageProvider(
-                                        //TODO: Need to replace below url with actual one
-                                        PlacesApi.dummyPictureUrl,
-                                        cacheKey: place.id.toString(),
-                                        // fit: BoxFit.cover,
-                                        // placeholder: (context, url) =>
-                                        //     Container(color: Colors.grey),
-                                      ),
-                                    ),
-                                  ),
-                                  title: Text(place.name),
-                                  subtitle: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      margin: const EdgeInsets.only(top: 4.0),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(16.0),
-                                        color: Colors.black.withOpacity(0.65),
-                                      ),
+                      Expanded(
+                        child: controller.favoritePlaces.isEmpty
+                            ? Center(
+                                child: Text('No favorite places to show'),
+                              )
+                            : ListView.separated(
+                                itemCount: controller.favoritePlaces.length,
+                                separatorBuilder: (context, index) => Divider(
+                                  height: 1.0,
+                                ),
+                                itemBuilder: (context, index) {
+                                  final Place place =
+                                      controller.favoritePlaces[index];
+                                  return Dismissible(
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      color: Colors.grey.shade300,
+                                      alignment: Alignment.centerRight,
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                          vertical: 4.0,
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 4.0),
-                                              child: Icon(
-                                                Icons.location_pin,
-                                                size: 14.0,
-                                                color: Colors.white
-                                                    .withOpacity(0.8),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Material(
-                                                type: MaterialType.transparency,
-                                                child: Text(
-                                                  '${place.state}, ${place.country}',
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headline6!
-                                                      .copyWith(
-                                                        decoration:
-                                                            TextDecoration.none,
-                                                        color: Colors.white,
-                                                        fontSize: 12.0,
-                                                        fontWeight:
-                                                            FontWeight.w300,
-                                                      ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                        padding:
+                                            const EdgeInsets.only(right: 32.0),
+                                        child: Icon(Icons.delete_outline),
                                       ),
                                     ),
-                                  ),
-                                  trailing: IconButton(
-                                    onPressed: () async {
-                                      await controller.onFavoriteRemoved(
-                                        place: place,
-                                        onComplete: () {},
-                                      );
+                                    key: Key(place.id.toString()),
+                                    confirmDismiss: (direction) async {
+                                      if (direction ==
+                                          DismissDirection.endToStart) {
+                                        return true;
+                                      }
+                                      return false;
                                     },
-                                    icon: Icon(Icons.close),
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
-                  ],
+                                    onDismissed: (direction) async {
+                                      if (direction ==
+                                          DismissDirection.endToStart) {
+                                        await controller.onFavoriteRemoved(
+                                          place: place,
+                                          onComplete: () {},
+                                        );
+                                      }
+                                    },
+                                    child: ListTile(
+                                      onTap: () {
+                                        if (RouteManger
+                                                .navigatorKey.currentState !=
+                                            null)
+                                          RouteManger.navigatorKey.currentState!
+                                              .pushNamed(Pages.placeDetails,
+                                                  arguments: {
+                                                'place': place,
+                                                'onFavorite': () {
+                                                  _controller.onFavorite(
+                                                    place: place,
+                                                    onComplete: () {
+                                                      _placeCards.clear();
+                                                      _placeCards.addAll(
+                                                          _buildAndGetCards(
+                                                        context: context,
+                                                        places:
+                                                            _controller.places,
+                                                      ));
+                                                    },
+                                                  );
+                                                },
+                                                'onFavoriteRemoved': () {
+                                                  _controller.onFavoriteRemoved(
+                                                    place: place,
+                                                    onComplete: () {
+                                                      _placeCards.clear();
+                                                      _placeCards.addAll(
+                                                          _buildAndGetCards(
+                                                        context: context,
+                                                        places:
+                                                            _controller.places,
+                                                      ));
+                                                    },
+                                                  );
+                                                },
+                                              });
+                                      },
+                                      leading: Hero(
+                                        tag: place.id,
+                                        child: CircleAvatar(
+                                          backgroundImage:
+                                              CachedNetworkImageProvider(
+                                            //TODO: Need to replace below url with actual one
+                                            PlacesApi.dummyPictureUrl,
+                                            cacheKey: place.id.toString(),
+                                            // fit: BoxFit.cover,
+                                            // placeholder: (context, url) =>
+                                            //     Container(color: Colors.grey),
+                                          ),
+                                        ),
+                                      ),
+                                      title: Text(
+                                        place.name,
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                      subtitle: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(top: 4.0),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16.0),
+                                            color:
+                                                Colors.black.withOpacity(0.65),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0,
+                                              vertical: 4.0,
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 4.0),
+                                                  child: Icon(
+                                                    Icons.location_pin,
+                                                    size: 14.0,
+                                                    color: Colors.white
+                                                        .withOpacity(0.8),
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  child: Material(
+                                                    type: MaterialType
+                                                        .transparency,
+                                                    child: Text(
+                                                      '${place.state}, ${place.country}',
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .headline6!
+                                                          .copyWith(
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .none,
+                                                            color: Colors.white,
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight.w300,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // trailing: IconButton(
+                                      //   onPressed: () async {
+                                      //     await controller.onFavoriteRemoved(
+                                      //       place: place,
+                                      //       onComplete: () {},
+                                      //     );
+                                      //   },
+                                      //   icon: Icon(Icons.close),
+                                      // ),
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

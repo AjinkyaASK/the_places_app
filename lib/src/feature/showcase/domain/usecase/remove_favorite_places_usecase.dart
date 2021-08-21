@@ -19,8 +19,7 @@ class RemoveFavoritePlacesUsecase
       {List<PlaceBase> places = const <PlaceBase>[],
       bool removeAll = false}) async {
     try {
-      if (removeAll)
-        await repository.removeFavoritePlaces(places, removeAll: removeAll);
+      await repository.removeFavoritePlaces(places, removeAll: removeAll);
       return Right(null);
     } on Exception catch (exception) {
       return Left(exception);
