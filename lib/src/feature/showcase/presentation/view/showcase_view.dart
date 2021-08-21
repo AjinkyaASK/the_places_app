@@ -1,16 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/exception/general_exception.dart';
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
 import '../../../../util/network/network_helper.dart';
 import '../../../../value/labels.dart';
-import '../../../auth/data/datasource/local/user_datasource_local.dart';
 import '../../../auth/data/model/user.dart';
-import '../../../auth/data/repository/auth_repository.dart';
-import '../../core/messages.dart';
+import '../../core/api.dart';
 import '../../data/datasource/local/places_datasource_local.dart';
 import '../../data/datasource/remote/places_datasource_remote.dart';
 import '../../data/model/place.dart';
@@ -20,10 +18,11 @@ import '../../domain/usecase/get_places_usecase.dart';
 import '../../domain/usecase/remove_favorite_places_usecase.dart';
 import '../../domain/usecase/set_places_usecase.dart';
 import '../logic/showcase_controller.dart';
-import 'detail_view.dart';
 import 'widget/no_internet.dart';
 import 'widget/place_card.dart';
 import 'widget/swiping_card.dart';
+
+final List<Widget> _placeCards = <Widget>[];
 
 class ShowcaseView extends StatelessWidget {
   ShowcaseView({
@@ -44,9 +43,10 @@ class ShowcaseView extends StatelessWidget {
     removeFavoritePlacesUsecase: RemoveFavoritePlacesUsecase(_repository),
   );
 
-  final List<Widget> _cards = <Widget>[];
-
-  List<Widget> _buildAndGetCards(BuildContext context) {
+  List<Widget> _buildAndGetCards({
+    required BuildContext context,
+    required List<Place> places,
+  }) {
     final List<Widget> cards = <Widget>[];
 
     double marginTop = 54;
@@ -57,7 +57,7 @@ class ShowcaseView extends StatelessWidget {
 
     int index = 0;
 
-    for (final place in _controller.places.reversed) {
+    for (final place in places.reversed) {
       switch (index) {
         case 0:
           scale = 1.0;
@@ -85,36 +85,45 @@ class ShowcaseView extends StatelessWidget {
           top: marginTop - marginToReduce,
           child: SwipingCard(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DetailView(
-                  place: place,
-                  onFavorite: () {
+              if (RouteManger.navigatorKey.currentState != null)
+                RouteManger.navigatorKey.currentState!
+                    .pushNamed(Pages.placeDetails, arguments: {
+                  'place': place,
+                  'onFavorite': () {
                     _controller.onFavorite(
                       place: place,
                       onComplete: () {
-                        _cards.clear();
-                        _cards.addAll(_buildAndGetCards(context));
+                        _placeCards.clear();
+                        _placeCards.addAll(_buildAndGetCards(
+                          context: context,
+                          places: _controller.places,
+                        ));
                       },
                     );
                   },
-                  onFavoriteRemoved: () {
+                  'onFavoriteRemoved': () {
                     _controller.onFavoriteRemoved(
                       place: place,
                       onComplete: () {
-                        _cards.clear();
-                        _cards.addAll(_buildAndGetCards(context));
+                        _placeCards.clear();
+                        _placeCards.addAll(_buildAndGetCards(
+                          context: context,
+                          places: _controller.places,
+                        ));
                       },
                     );
                   },
-                ),
-              ));
+                });
             },
             onSwipeRight: () {
               _controller.onFavorite(
                 place: place,
                 onComplete: () {
-                  _cards.clear();
-                  _cards.addAll(_buildAndGetCards(context));
+                  _placeCards.clear();
+                  _placeCards.addAll(_buildAndGetCards(
+                    context: context,
+                    places: _controller.places,
+                  ));
                 },
               );
             },
@@ -122,8 +131,11 @@ class ShowcaseView extends StatelessWidget {
               _controller.onRemoved(
                 place: place,
                 onComplete: () {
-                  _cards.clear();
-                  _cards.addAll(_buildAndGetCards(context));
+                  _placeCards.clear();
+                  _placeCards.addAll(_buildAndGetCards(
+                    context: context,
+                    places: _controller.places,
+                  ));
                 },
               );
             },
@@ -135,8 +147,11 @@ class ShowcaseView extends StatelessWidget {
                 _controller.onFavorite(
                   place: place,
                   onComplete: () {
-                    _cards.clear();
-                    _cards.addAll(_buildAndGetCards(context));
+                    _placeCards.clear();
+                    _placeCards.addAll(_buildAndGetCards(
+                      context: context,
+                      places: _controller.places,
+                    ));
                   },
                 );
               },
@@ -152,7 +167,7 @@ class ShowcaseView extends StatelessWidget {
     return cards;
   }
 
-  Widget get loaderWidget => Center(
+  Widget get _loaderWidget => const Center(
         child: SizedBox(
           width: 48.0,
           height: 48.0,
@@ -160,13 +175,123 @@ class ShowcaseView extends StatelessWidget {
         ),
       );
 
+  void _showProfileDialog({
+    required BuildContext context,
+    required ShowcaseController controller,
+  }) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            actionsPadding: EdgeInsets.zero,
+            buttonPadding: EdgeInsets.zero,
+            titlePadding: EdgeInsets.zero,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    if (RouteManger.navigatorKey.currentState != null)
+                      RouteManger.navigatorKey.currentState!.pop();
+                  },
+                  icon: Icon(
+                    Icons.close,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+            content: Container(
+              width: 150.0,
+              // height: 150.0,
+              decoration: BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 24.0,
+                      right: 24.0,
+                      bottom: 24.0,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: CircleAvatar(
+                            radius: 50.0,
+                            backgroundImage: user.pictureUrl.isEmpty
+                                ? null
+                                : CachedNetworkImageProvider(user.pictureUrl),
+                            child: user.pictureUrl.isEmpty
+                                ? Icon(
+                                    Icons.person,
+                                    size: 64.0,
+                                    color: Colors.white30,
+                                  )
+                                : null,
+                            backgroundColor: Colors.grey.shade800,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            user.name,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        if (user.email != null)
+                          Text(
+                            user.email!,
+                            style: TextStyle(
+                              fontSize: 12.0,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    height: 1.0,
+                    thickness: 1.0,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: controller.onSignOut,
+                child: Container(
+                  width: double.maxFinite,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ShowcaseController>(
       create: (_) => _controller
         ..init(() {
-          _cards.clear();
-          _cards.addAll(_buildAndGetCards(context));
+          _placeCards.clear();
+          _placeCards.addAll(_buildAndGetCards(
+            context: context,
+            places: _controller.places,
+          ));
         }),
       child: Consumer<ShowcaseController>(
         builder: (__, controller, ____) {
@@ -179,17 +304,24 @@ class ShowcaseView extends StatelessWidget {
               centerTitle: true,
               leading: Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: CircleAvatar(
-                  backgroundImage: user.pictureUrl.isEmpty
-                      ? null
-                      : CachedNetworkImageProvider(user.pictureUrl),
-                  child: user.pictureUrl.isEmpty
-                      ? Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        )
-                      : null,
-                  backgroundColor: Colors.grey.shade800,
+                child: InkWell(
+                  onTap: () => _showProfileDialog(
+                    context: context,
+                    controller: controller,
+                  ),
+                  radius: 32.0,
+                  child: CircleAvatar(
+                    backgroundImage: user.pictureUrl.isEmpty
+                        ? null
+                        : CachedNetworkImageProvider(user.pictureUrl),
+                    child: user.pictureUrl.isEmpty
+                        ? Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          )
+                        : null,
+                    backgroundColor: Colors.grey.shade800,
+                  ),
                 ),
               ),
             ),
@@ -230,32 +362,39 @@ class ShowcaseView extends StatelessWidget {
                                     controller.favoritePlaces[index];
                                 return ListTile(
                                   onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                      builder: (context) => DetailView(
-                                        place: place,
-                                        onFavorite: () {
-                                          _controller.onFavorite(
-                                            place: place,
-                                            onComplete: () {
-                                              _cards.clear();
-                                              _cards.addAll(
-                                                  _buildAndGetCards(context));
+                                    if (RouteManger.navigatorKey.currentState !=
+                                        null)
+                                      RouteManger.navigatorKey.currentState!
+                                          .pushNamed(Pages.placeDetails,
+                                              arguments: {
+                                            'place': place,
+                                            'onFavorite': () {
+                                              _controller.onFavorite(
+                                                place: place,
+                                                onComplete: () {
+                                                  _placeCards.clear();
+                                                  _placeCards
+                                                      .addAll(_buildAndGetCards(
+                                                    context: context,
+                                                    places: _controller.places,
+                                                  ));
+                                                },
+                                              );
                                             },
-                                          );
-                                        },
-                                        onFavoriteRemoved: () {
-                                          _controller.onFavoriteRemoved(
-                                            place: place,
-                                            onComplete: () {
-                                              _cards.clear();
-                                              _cards.addAll(
-                                                  _buildAndGetCards(context));
+                                            'onFavoriteRemoved': () {
+                                              _controller.onFavoriteRemoved(
+                                                place: place,
+                                                onComplete: () {
+                                                  _placeCards.clear();
+                                                  _placeCards
+                                                      .addAll(_buildAndGetCards(
+                                                    context: context,
+                                                    places: _controller.places,
+                                                  ));
+                                                },
+                                              );
                                             },
-                                          );
-                                        },
-                                      ),
-                                    ));
+                                          });
                                   },
                                   leading: Hero(
                                     tag: place.id,
@@ -263,7 +402,7 @@ class ShowcaseView extends StatelessWidget {
                                       backgroundImage:
                                           CachedNetworkImageProvider(
                                         //TODO: Need to replace below url with actual one
-                                        'https://picsum.photos/720/1280',
+                                        PlacesApi.dummyPictureUrl,
                                         cacheKey: place.id.toString(),
                                         // fit: BoxFit.cover,
                                         // placeholder: (context, url) =>
@@ -338,65 +477,39 @@ class ShowcaseView extends StatelessWidget {
                               },
                             ),
                     ),
-                    Divider(
-                      height: 1.0,
-                      thickness: 1.0,
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        try {
-                          // TODO: Signout call below needs to be well referenced
-                          await AuthRepository(UserDatasourceLocal()).signOut();
-                          await controller.removeAllFavorites();
-                          if (RouteManger.navigatorKey.currentState != null)
-                            RouteManger.navigatorKey.currentState!
-                                .pushNamedAndRemoveUntil(
-                              Pages.authentication,
-                              (route) => false,
-                            );
-                        } on GeneralException catch (exception) {
-                          controller.flashError(exception.message ??
-                              ShowcaseMessages.BlanketErrorMessage);
-                        } catch (e) {
-                          controller
-                              .flashError(ShowcaseMessages.BlanketErrorMessage);
-                        }
-                      },
-                      child: Container(
-                        width: double.maxFinite,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'Logout',
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
             ),
             body: controller.loading
-                ? loaderWidget
+                ? _loaderWidget
                 : FutureBuilder<bool>(
                     future: NetworkHelper.isConnected,
                     builder: (context, snapshot) {
                       if (!snapshot.hasError && snapshot.hasData) {
-                        if (snapshot.data ?? false)
+                        if (snapshot.data ?? false) {
+                          if (_placeCards.isEmpty)
+                            return Center(
+                              child: Text('No places to show'),
+                            );
                           return Stack(
                             alignment: Alignment.center,
-                            children: _cards.reversed.toList(),
+                            children: _placeCards.reversed.toList(),
                           );
+                        }
                         return NoInternetWidget(
                           onRetry: () async {
                             await controller.loadPlaces(() {
-                              _cards.clear();
-                              _cards.addAll(_buildAndGetCards(context));
+                              _placeCards.clear();
+                              _placeCards.addAll(_buildAndGetCards(
+                                context: context,
+                                places: _controller.places,
+                              ));
                             });
                           },
                         );
                       } else {
-                        return loaderWidget;
+                        return _loaderWidget;
                       }
                     }),
           );

@@ -33,8 +33,10 @@ class AuthRepository implements AuthRepositoryBase {
 
       if (firebaseUser != null) {
         placesAppUser = PlacesAppUser(
-            name: firebaseUser.displayName ?? '',
-            pictureUrl: firebaseUser.photoURL ?? '');
+          name: firebaseUser.displayName ?? '',
+          pictureUrl: firebaseUser.photoURL ?? '',
+          email: firebaseUser.email,
+        );
       } else if (facebookAccessToken != null) {
         // user is logged
         final Map<String, dynamic> userData =
@@ -144,6 +146,7 @@ class AuthRepository implements AuthRepositoryBase {
 
       final placesAppUser = PlacesAppUser(
         name: userData['name'],
+        email: userData['email'],
         pictureUrl: ((userData['picture'] as Map<String, dynamic>)['data']
             as Map<String, dynamic>)['url'],
       );

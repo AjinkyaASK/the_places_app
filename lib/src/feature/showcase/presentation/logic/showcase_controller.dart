@@ -2,6 +2,11 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/exception/exception.dart';
+import '../../../../core/exception/general_exception.dart';
+import '../../../../util/navigation/pages.dart';
+import '../../../../util/navigation/router.dart';
+import '../../../auth/data/datasource/local/user_datasource_local.dart';
+import '../../../auth/data/repository/auth_repository.dart';
 import '../../core/messages.dart';
 import '../../data/model/place.dart';
 import '../../domain/entity/place.dart';
@@ -190,5 +195,22 @@ class ShowcaseController extends ChangeNotifier {
         flashSuccess();
       },
     );
+  }
+
+  Future<void> onSignOut() async {
+    try {
+      // TODO: Signout call below needs to be well referenced
+      await AuthRepository(UserDatasourceLocal()).signOut();
+      await removeAllFavorites();
+      if (RouteManger.navigatorKey.currentState != null)
+        RouteManger.navigatorKey.currentState!.pushNamedAndRemoveUntil(
+          Pages.authentication,
+          (route) => false,
+        );
+    } on GeneralException catch (exception) {
+      flashError(exception.message ?? ShowcaseMessages.BlanketErrorMessage);
+    } catch (error) {
+      flashError(ShowcaseMessages.BlanketErrorMessage);
+    }
   }
 }

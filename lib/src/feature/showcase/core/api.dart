@@ -1,6 +1,8 @@
 class PlacesApi {
   static const String url = 'https://hiveword.com/papi/random/locationNames';
 
+  static const String dummyPictureUrl = 'https://picsum.photos/720/1280';
+
   static final _PlacesApiLabels labels = _PlacesApiLabels();
 }
 

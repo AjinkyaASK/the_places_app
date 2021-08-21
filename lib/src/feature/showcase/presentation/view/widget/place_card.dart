@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
-import '../../../../../util/url/url_utility.dart';
 
+import '../../../../../util/url/url_utility.dart';
+import '../../../core/api.dart';
 import '../../../data/model/place.dart';
 
 class PlaceCard extends StatefulWidget {
@@ -56,7 +57,7 @@ class _PlaceCardState extends State<PlaceCard> {
   @override
   void initState() {
     super.initState();
-    loadColorDataFromImage('https://picsum.photos/720/1280').then((color) {
+    loadColorDataFromImage(PlacesApi.dummyPictureUrl).then((color) {
       setState(() {});
     });
   }
@@ -100,7 +101,7 @@ class _PlaceCardState extends State<PlaceCard> {
                     child: CachedNetworkImage(
                       cacheKey: widget.place.id.toString(),
                       //TODO: Need to replace below url with actual one
-                      imageUrl: 'https://picsum.photos/720/1280',
+                      imageUrl: PlacesApi.dummyPictureUrl,
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
                           Container(color: Colors.grey),

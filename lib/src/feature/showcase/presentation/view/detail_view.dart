@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:the_places_app/src/util/navigation/pages.dart';
-import 'package:the_places_app/src/util/navigation/router.dart';
-import '../../../../util/url/url_utility.dart';
 
+import '../../../../util/navigation/pages.dart';
+import '../../../../util/navigation/router.dart';
+import '../../../../util/url/url_utility.dart';
+import '../../core/api.dart';
 import '../../data/model/place.dart';
 
 class DetailView extends StatelessWidget {
@@ -36,21 +37,22 @@ class DetailView extends StatelessWidget {
                 title: place.name,
                 foregroundColor: foregroundColor,
                 backgroundColor: backgroundColor,
-                backgroundImageUrl: 'https://picsum.photos/720/1280',
+                backgroundImageUrl: PlacesApi.dummyPictureUrl,
                 backgroundImageCacheKey: place.id.toString(),
                 backgroundImageHeroTag: place.id,
                 place: place,
                 onFavorite: onFavorite,
                 onFavoriteRemoved: onFavoriteRemoved,
                 onHeaderTapped: () {
-                  RouteManger.navigatorKey.currentState!.pushNamed(
-                    Pages.fullScreenImageView,
-                    arguments: {
-                      'url': 'https://picsum.photos/720/1280',
-                      'heroTag': place.id,
-                      'cacheKey': place.id.toString(),
-                    },
-                  );
+                  if (RouteManger.navigatorKey.currentState != null)
+                    RouteManger.navigatorKey.currentState!.pushNamed(
+                      Pages.fullScreenImageView,
+                      arguments: {
+                        'url': PlacesApi.dummyPictureUrl,
+                        'heroTag': place.id,
+                        'cacheKey': place.id.toString(),
+                      },
+                    );
                 },
               ),
             ),
