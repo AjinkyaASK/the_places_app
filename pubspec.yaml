@@ -71,6 +71,10 @@ flutter:
   assets:
     # For the profile placeholder when image is not available
     - assets/images/profile_placeholder.png
+
+    # No Connection Illustration
+    - assets/images/no_connection.png
+    - assets/images/no_connectivity.png
     
     # Icons
     - assets/icons/apple.png

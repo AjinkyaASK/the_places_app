@@ -3,4 +3,5 @@ class Pages {
   static const String authentication = '/auth';
   static const String placesShowcase = '/places';
   static const String placeDetails = '/place-details';
+  static const String fullScreenImageView = '/fullscreen-image-view';
 }

@@ -201,14 +201,6 @@ class ShowcaseView extends StatelessWidget {
                     AppBar(
                       title: Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Icon(
-                              Icons.favorite,
-                              color: Colors.pink.shade400,
-                              size: 20.0,
-                            ),
-                          ),
                           Text(
                             'Favorites',
                             style: TextStyle(

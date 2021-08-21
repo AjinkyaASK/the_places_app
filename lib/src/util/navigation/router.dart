@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:the_places_app/src/feature/showcase/presentation/view/fullscreen_image_view.dart';
 
 import '../../feature/auth/data/model/user.dart';
 import '../../feature/auth/presentation/view/auth_view.dart';
@@ -47,6 +48,19 @@ class RouteManger {
               place: args['place'],
               onFavorite: args['onFavorite'],
               onFavoriteRemoved: args['onFavoriteRemoved'],
+            ),
+          );
+        return _errorRoute;
+
+      case Pages.fullScreenImageView:
+        if (args is Map<String, dynamic> &&
+            args.containsKey('url') &&
+            args['url'] is String)
+          return MaterialPageRoute(
+            builder: (_) => FullscreenImageView(
+              url: args['url'],
+              heroTag: args.containsKey('heroTag') ? args['heroTag'] : null,
+              cacheKey: args.containsKey('cacheKey') ? args['cacheKey'] : null,
             ),
           );
         return _errorRoute;

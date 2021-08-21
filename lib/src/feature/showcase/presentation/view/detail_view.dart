@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:the_places_app/src/util/navigation/pages.dart';
+import 'package:the_places_app/src/util/navigation/router.dart';
 import '../../../../util/url/url_utility.dart';
 
 import '../../data/model/place.dart';
@@ -40,6 +42,16 @@ class DetailView extends StatelessWidget {
                 place: place,
                 onFavorite: onFavorite,
                 onFavoriteRemoved: onFavoriteRemoved,
+                onHeaderTapped: () {
+                  RouteManger.navigatorKey.currentState!.pushNamed(
+                    Pages.fullScreenImageView,
+                    arguments: {
+                      'url': 'https://picsum.photos/720/1280',
+                      'heroTag': place.id,
+                      'cacheKey': place.id.toString(),
+                    },
+                  );
+                },
               ),
             ),
             SliverToBoxAdapter(
@@ -260,6 +272,7 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
     this.backgroundImageCacheKey,
     this.backgroundImageHeroTag,
     required this.place,
+    this.onHeaderTapped,
     required this.onFavorite,
     required this.onFavoriteRemoved,
   });
@@ -273,6 +286,7 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
   final String? backgroundImageCacheKey;
   final Object? backgroundImageHeroTag;
   final Place place;
+  final void Function()? onHeaderTapped;
   final void Function() onFavorite;
   final void Function() onFavoriteRemoved;
 
@@ -294,96 +308,99 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      height: expandedHeight,
-      width: double.maxFinite,
-      color: backgroundColor,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background Image
-          if (backgroundImageUrl != null)
-            if (backgroundImageHeroTag != null)
-              Opacity(
-                opacity: getProcessedShrinkOffset(shrinkOffset),
-                child: Hero(
-                  tag: backgroundImageHeroTag!,
+    return InkWell(
+      onTap: onHeaderTapped,
+      child: Container(
+        height: expandedHeight,
+        width: double.maxFinite,
+        color: backgroundColor,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background Image
+            if (backgroundImageUrl != null)
+              if (backgroundImageHeroTag != null)
+                Opacity(
+                  opacity: getProcessedShrinkOffset(shrinkOffset),
+                  child: Hero(
+                    tag: backgroundImageHeroTag!,
+                    child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      cacheKey: backgroundImageCacheKey,
+                      imageUrl: backgroundImageUrl!,
+                    ),
+                  ),
+                )
+              else
+                Opacity(
+                  opacity: getProcessedShrinkOffset(shrinkOffset),
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
                     cacheKey: backgroundImageCacheKey,
                     imageUrl: backgroundImageUrl!,
                   ),
                 ),
-              )
-            else
-              Opacity(
-                opacity: getProcessedShrinkOffset(shrinkOffset),
-                child: CachedNetworkImage(
-                  fit: BoxFit.cover,
-                  cacheKey: backgroundImageCacheKey,
-                  imageUrl: backgroundImageUrl!,
-                ),
-              ),
 
-          // Appbar
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: collapsedHeight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(
-                      Icons.arrow_back_ios_new_outlined,
-                      color: foregroundColor,
+            // Appbar
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: collapsedHeight,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(
+                        Icons.arrow_back_ios_new_outlined,
+                        color: foregroundColor,
+                      ),
                     ),
-                  ),
-                  StatefulBuilder(builder: (context, refresh) {
-                    return Hero(
-                      tag: 'fav${place.id}',
-                      transitionOnUserGestures: true,
-                      child: MaterialButton(
-                        onPressed: () {
-                          if (place.favorite) {
-                            onFavoriteRemoved();
-                          } else {
-                            onFavorite();
-                          }
-                          place.favorite = !place.favorite;
-                          refresh(() {});
-                        },
-                        minWidth: 0.0,
-                        elevation: 0.0,
-                        padding: const EdgeInsets.all(12.0),
-                        shape: CircleBorder(),
-                        // color: foregroundColor.withOpacity(0.75),
-                        child: SizedBox(
-                          width: 32.0,
-                          height: 32.0,
-                          child: Center(
-                            child: Icon(
-                              place.favorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_outline,
-                              size: 24.0,
-                              color: place.favorite
-                                  ? Colors.pink.shade400
-                                  : foregroundColor.withOpacity(0.75),
+                    StatefulBuilder(builder: (context, refresh) {
+                      return Hero(
+                        tag: 'fav${place.id}',
+                        transitionOnUserGestures: true,
+                        child: MaterialButton(
+                          onPressed: () {
+                            if (place.favorite) {
+                              onFavoriteRemoved();
+                            } else {
+                              onFavorite();
+                            }
+                            place.favorite = !place.favorite;
+                            refresh(() {});
+                          },
+                          minWidth: 0.0,
+                          elevation: 0.0,
+                          padding: const EdgeInsets.all(12.0),
+                          shape: CircleBorder(),
+                          // color: foregroundColor.withOpacity(0.75),
+                          child: SizedBox(
+                            width: 32.0,
+                            height: 32.0,
+                            child: Center(
+                              child: Icon(
+                                place.favorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_outline,
+                                size: 24.0,
+                                color: place.favorite
+                                    ? Colors.pink.shade400
+                                    : foregroundColor.withOpacity(0.75),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }),
-                ],
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

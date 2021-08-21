@@ -127,7 +127,7 @@ class AuthenticationView extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(32.0)),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0,
+                                  vertical: 16.0,
                                   horizontal: 12.0,
                                 ),
                                 child: Row(
@@ -179,7 +179,7 @@ class AuthenticationView extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(32.0)),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0,
+                                  vertical: 16.0,
                                   horizontal: 12.0,
                                 ),
                                 child: Row(
