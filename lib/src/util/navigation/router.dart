@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -86,7 +88,7 @@ class RouteManger {
 
         /// Routing to the error route considering that
         /// the app does not support requested route
-        print('App does not support requested route');
+        log('App does not support requested route');
         return _errorRoute;
     }
   }

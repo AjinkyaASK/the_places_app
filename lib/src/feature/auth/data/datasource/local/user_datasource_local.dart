@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../../../core/exception/general_exception.dart';
@@ -18,7 +20,7 @@ class UserDatasourceLocal implements UserDatasource {
         await _userBox.put(AuthLocalDatabaseKeys.guestSignedIn, false);
     } catch (error) {
       //TODO: Handle this error in better way
-      print('Initialization error: Error while opening places box: $error');
+      log('Initialization error: Error while opening places box: $error');
     }
   }
 

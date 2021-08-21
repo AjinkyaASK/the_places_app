@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/exception/exception.dart';
@@ -23,7 +25,7 @@ class SignInWithGoogleUseCase
       final result = await repository.signInWithGoogle(
         onAuthFailure: onAuthFailure ??
             (message) {
-              print('Sign in failed');
+              log('Sign in failed');
             },
       );
       return Right(result);

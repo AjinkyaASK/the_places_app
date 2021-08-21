@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -168,7 +169,7 @@ class AuthRepository implements AuthRepositoryBase {
       );
       return placesAppUser;
     } else {
-      print('Signing in with Facebook failed: ${result.message}');
+      log('Signing in with Facebook failed: ${result.message}');
     }
   }
 

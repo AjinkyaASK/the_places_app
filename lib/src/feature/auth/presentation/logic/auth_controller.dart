@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -74,7 +75,7 @@ class AuthController extends ChangeNotifier {
     required BuildContext context,
     required String message,
   }) {
-    print(message);
+    log(message);
     flashError(
       context: context,
       message: message,

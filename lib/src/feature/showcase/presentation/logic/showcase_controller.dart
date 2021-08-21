@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 
@@ -75,7 +77,7 @@ class ShowcaseController extends ChangeNotifier {
   ///[flashError] used to show error messages to the users
   void flashError(String message) {
     //TODO: Implement something that flashes error
-    print(message);
+    log(message);
   }
 
   ///[flashSuccess] used to show success messages to the users

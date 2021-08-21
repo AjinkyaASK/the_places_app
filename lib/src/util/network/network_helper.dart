@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -21,7 +22,7 @@ class NetworkHelper {
       /// No internet
       return false;
     } catch (error) {
-      print('Error while checking internet connection $error');
+      log('Error while checking internet connection $error');
 
       /// Unexpected error thrown
       return false;
@@ -67,7 +68,7 @@ class NetworkHelper {
         requestUrl: request.requestUrl.toString(),
       );
     } catch (error) {
-      print('$error');
+      log('$error');
       throw NetworkException(
         source: 'NetworkHelper.request',
         message: '$error',

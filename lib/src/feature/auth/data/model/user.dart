@@ -1,4 +1,4 @@
-import 'package:the_places_app/src/core/exception/general_exception.dart';
+import '../../../../core/exception/general_exception.dart';
 
 import '../../core/auth_database_keys.dart';
 import '../../domain/entity/user.dart';

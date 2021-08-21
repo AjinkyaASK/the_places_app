@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hive/hive.dart';
 
 import '../../../../../core/exception/general_exception.dart';
@@ -15,7 +17,7 @@ class PlacesDatasourceLocal extends PlacesDatasource {
       _placesBox = await Hive.openBox<Place>(_placesBoxLabel);
     } catch (error) {
       //TODO: Handle this error in better way
-      print('Initialization error: Error while opening places box: $error');
+      log('Initialization error: Error while opening places box: $error');
     }
   }
 
