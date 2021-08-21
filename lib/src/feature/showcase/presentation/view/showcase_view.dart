@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/exception/general_exception.dart';
 import '../../../../util/navigation/pages.dart';
 import '../../../../util/navigation/router.dart';
+import '../../../../util/network/network_helper.dart';
 import '../../../../value/labels.dart';
 import '../../../auth/data/datasource/local/user_datasource_local.dart';
 import '../../../auth/data/model/user.dart';
@@ -20,6 +21,7 @@ import '../../domain/usecase/remove_favorite_places_usecase.dart';
 import '../../domain/usecase/set_places_usecase.dart';
 import '../logic/showcase_controller.dart';
 import 'detail_view.dart';
+import 'widget/no_internet.dart';
 import 'widget/place_card.dart';
 import 'widget/swiping_card.dart';
 
@@ -149,6 +151,14 @@ class ShowcaseView extends StatelessWidget {
 
     return cards;
   }
+
+  Widget get loaderWidget => Center(
+        child: SizedBox(
+          width: 48.0,
+          height: 48.0,
+          child: CircularProgressIndicator(),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -375,19 +385,28 @@ class ShowcaseView extends StatelessWidget {
               ),
             ),
             body: controller.loading
-                ? Center(
-                    child: SizedBox(
-                      width: 48.0,
-                      height: 48.0,
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                : Stack(
-                    // fit: StackFit.expand,
-                    alignment: Alignment.center,
-                    // children: _cards,
-                    children: _cards.reversed.toList(),
-                  ),
+                ? loaderWidget
+                : FutureBuilder<bool>(
+                    future: NetworkHelper.isConnected,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasError && snapshot.hasData) {
+                        if (snapshot.data ?? false)
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: _cards.reversed.toList(),
+                          );
+                        return NoInternetWidget(
+                          onRetry: () async {
+                            await controller.loadPlaces(() {
+                              _cards.clear();
+                              _cards.addAll(_buildAndGetCards(context));
+                            });
+                          },
+                        );
+                      } else {
+                        return loaderWidget;
+                      }
+                    }),
           );
         },
       ),

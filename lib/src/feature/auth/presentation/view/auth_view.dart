@@ -61,7 +61,8 @@ class AuthenticationView extends StatelessWidget {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (controller.isSignInWithAppleSupported)
+                        //TODO: the false is added in condition to make Sign in apple unavailable
+                        if (false && controller.isSignInWithAppleSupported)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: MaterialButton(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -7,6 +8,18 @@ import 'network_request.dart';
 import 'network_response.dart';
 
 class NetworkHelper {
+  static Future<bool> get isConnected async {
+    try {
+      final result = await InternetAddress.lookup('example.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false;
+    } catch (e) {
+      print('Error while checking internet connection');
+      return false;
+    }
+  }
+
   static Future<NetworkResponse> request(NetworkRequest request) async {
     try {
       final Uri url = Uri.parse(request.requestUrl);
