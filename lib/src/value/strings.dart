@@ -5,6 +5,8 @@ class Strings {
   static const String blanketErrorMessage = 'Oops! Please try again.';
   static const String guestUserName = 'Guest';
   static const String guestSignInErrorMessage = 'Error signing in as a guest';
+  static const String aboutThisAppTitle = 'About this app';
+  static const String githubRepositoryButton = 'Github Repository';
 
   /// For Showcase Screen
   static const String favoritesTitle = 'Favorites';
@@ -27,4 +29,8 @@ class Strings {
   static const String noInternetConnectionDescription =
       'Please check your internet connection and try again.';
   static const String retryButton = 'Retry';
+
+  // Links
+  static const String githubRepositoryLink =
+      'https://github.com/AjinkyaASK/the_places_app';
 }

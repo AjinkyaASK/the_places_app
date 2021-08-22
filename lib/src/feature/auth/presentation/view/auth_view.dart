@@ -59,6 +59,13 @@ class AuthenticationView extends StatelessWidget {
                         ),
                       ],
                     ),
+                    Container(
+                      constraints: BoxConstraints(
+                        maxWidth: 250.0,
+                        maxHeight: 250.0,
+                      ),
+                      child: Image.asset('assets/app_icon.png'),
+                    ),
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
