@@ -82,7 +82,7 @@ class _PlaceCardState extends State<PlaceCard> {
   @override
   void initState() {
     super.initState();
-    _loadColorDataFromImage(PlacesApi.dummyPictureUrl).then((color) {
+    _loadColorDataFromImage(PlacesApi.radmomPictureUrl).then((color) {
       setState(() {});
     });
   }
@@ -128,7 +128,7 @@ class _PlaceCardState extends State<PlaceCard> {
                   child: CachedNetworkImage(
                     cacheKey: widget.place.id.toString(),
                     //TODO: Need to replace below url with actual one
-                    imageUrl: PlacesApi.dummyPictureUrl,
+                    imageUrl: PlacesApi.radmomPictureUrl,
                     fit: BoxFit.cover,
                     placeholder: (context, url) =>
                         Container(color: Colors.grey.shade400),

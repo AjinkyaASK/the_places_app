@@ -2,8 +2,8 @@ class PlacesApi {
   ///[url] is the url of the places API
   static const String url = 'https://hiveword.com/papi/random/locationNames';
 
-  ///[dummyPictureUrl] is the url of dummy picture
-  static const String dummyPictureUrl = 'https://picsum.photos/720/1280';
+  ///[radmomPictureUrl] is the url of dummy picture
+  static const String radmomPictureUrl = 'https://picsum.photos/720/1280';
 
   static final _PlacesApiLabels labels = _PlacesApiLabels();
 }

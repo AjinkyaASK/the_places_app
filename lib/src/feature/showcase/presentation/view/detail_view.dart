@@ -78,7 +78,7 @@ class DetailView extends StatelessWidget {
                 title: place.name,
                 foregroundColor: foregroundColor,
                 backgroundColor: backgroundColor,
-                backgroundImageUrl: PlacesApi.dummyPictureUrl,
+                backgroundImageUrl: PlacesApi.radmomPictureUrl,
                 backgroundImageCacheKey: place.id.toString(),
                 backgroundImageHeroTag: place.id,
                 place: place,
@@ -90,7 +90,7 @@ class DetailView extends StatelessWidget {
                     RouteManger.navigatorKey.currentState!.pushNamed(
                       Pages.fullScreenImageView,
                       arguments: FullscreenImageViewParams(
-                        url: PlacesApi.dummyPictureUrl,
+                        url: PlacesApi.radmomPictureUrl,
                         heroTag: place.id,
                         cacheKey: place.id.toString(),
                       ),

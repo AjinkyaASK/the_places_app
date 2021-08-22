@@ -19,6 +19,7 @@ import '../../domain/usecase/remove_favorite_places_usecase.dart';
 import '../../domain/usecase/set_places_usecase.dart';
 import '../logic/showcase_controller.dart';
 import 'detail_view.dart';
+import 'widget/draggable_swiping_card.dart';
 import 'widget/material_chip.dart';
 import 'widget/no_internet.dart';
 import 'widget/place_card.dart';
@@ -113,10 +114,11 @@ class ShowcaseView extends StatelessWidget {
       cards.add(
         Container(
           // top margin is set by the margin subtracted by the decrement value
+          alignment: Alignment.topCenter,
           margin: EdgeInsets.only(
             top: margin > 0 ? margin : 0,
           ),
-          child: SwipingCard(
+          child: DraggableSwipingCard(
             // Navigating to details screen on tap of the card
             onTap: () {
               if (RouteManger.navigatorKey.currentState != null)
@@ -346,6 +348,20 @@ class ShowcaseView extends StatelessWidget {
         }),
       child: Consumer<ShowcaseController>(
         builder: (__, controller, ____) {
+          // return Scaffold(
+          //   body: Container(
+          //     child: DraggableSwipingCard(
+          //       onTap: () {},
+          //       onSwipeLeft: () {},
+          //       onSwipeRight: () {},
+          //       child: Container(
+          //         width: 250,
+          //         height: 250,
+          //         color: Colors.black,
+          //       ),
+          //     ),
+          //   ),
+          // );
           return Scaffold(
             appBar: AppBar(
               title: Text(
@@ -507,7 +523,7 @@ class ShowcaseView extends StatelessWidget {
                                           backgroundImage:
                                               CachedNetworkImageProvider(
                                             //TODO: Need to replace below url with actual one
-                                            PlacesApi.dummyPictureUrl,
+                                            PlacesApi.radmomPictureUrl,
                                             cacheKey: place.id.toString(),
                                           ),
                                         ),
