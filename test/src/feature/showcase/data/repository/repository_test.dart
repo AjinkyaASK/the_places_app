@@ -4,7 +4,6 @@ import 'package:the_places_app/src/feature/showcase/data/datasource/local/places
 import 'package:the_places_app/src/feature/showcase/data/datasource/remote/places_datasource_remote.dart';
 import 'package:the_places_app/src/feature/showcase/data/model/place.dart';
 import 'package:the_places_app/src/feature/showcase/data/repository/repository.dart';
-import 'package:the_places_app/src/feature/showcase/domain/entity/place.dart';
 import 'package:the_places_app/src/feature/showcase/domain/repository/repository.dart';
 
 void main() async {

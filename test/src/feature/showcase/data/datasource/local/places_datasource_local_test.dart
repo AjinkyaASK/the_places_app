@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:the_places_app/src/core/exception/general_exception.dart';
-import 'package:the_places_app/src/feature/showcase/core/api.dart';
 import 'package:the_places_app/src/feature/showcase/data/datasource/local/places_datasource_local.dart';
 import 'package:the_places_app/src/feature/showcase/data/model/place.dart';
 import 'package:the_places_app/src/feature/showcase/domain/entity/datasource.dart';

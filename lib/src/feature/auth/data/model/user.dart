@@ -53,7 +53,7 @@ class PlacesAppUser extends PlacesAppUserBase {
     return PlacesAppUser(
       name: data[AuthLocalDatabaseKeys.name],
       pictureUrl: data[AuthLocalDatabaseKeys.pictureUrl],
-      isGuest: data[AuthLocalDatabaseKeys.isGuest],
+      isGuest: data[AuthLocalDatabaseKeys.isGuest] ?? false,
       email: data[AuthLocalDatabaseKeys.email],
     );
   }

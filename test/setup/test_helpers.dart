@@ -1,5 +1,5 @@
-import 'package:dartz/dartz.dart';
 import 'package:mockito/mockito.dart';
+import 'package:the_places_app/src/feature/auth/data/repository/auth_repository.dart';
 import 'package:the_places_app/src/feature/showcase/data/datasource/local/places_datasource_local.dart';
 import 'package:the_places_app/src/feature/showcase/data/datasource/remote/places_datasource_remote.dart';
 import 'package:the_places_app/src/feature/showcase/data/model/place.dart';
@@ -30,11 +30,6 @@ class PlacesDatasourceRemoteMock extends Mock
   }
 }
 
-class PlacesRepositoryMock extends Mock implements PlacesRepository {
-  @override
-  Future<List<PlaceBase>> getFavoritePlaces() async {
-    return List.from([
-      PlaceMock(),
-    ]);
-  }
-}
+class PlacesRepositoryMock extends Mock implements PlacesRepository {}
+
+class AuthRepositoryMock extends Mock implements AuthRepository {}
