@@ -31,9 +31,27 @@
 Note: Screenshots are somewhat outdated due to the recent changes in design. Getting udpated soon.
 <br>
 <br>
-<!-- <img src="https://raw.githubusercontent.com/AjinkyaASK/themoviesapp/master/screenshots/1.png" width='250px'
-         alt="Screenshots"> -->
-
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_auth.png" width='250px'
+         alt="Screenshots">
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_home.png" width='250px'
+         alt="Screenshots">
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_user.png" width='250px'
+         alt="Screenshots">
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_guest.png" width='250px'
+         alt="Screenshots">         
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_drawer.png" width='250px'
+         alt="Screenshots">
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_drawer_tile_dismiss.png" width='250px'
+         alt="Screenshots">         
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_details.png" width='250px'
+         alt="Screenshots">      
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_fav.png" width='250px'
+         alt="Screenshots">  
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_remove.png" width='250px'
+         alt="Screenshots"> 
+<img src="https://raw.githubusercontent.com/AjinkyaASK/the_places_app/master/screenshots/the_places_app_screenshot_splash.png" width='250px'
+         alt="Screenshots">     
+             
 ## Download the source code
 You can [download](https://github.com/AjinkyaASK/the_places_app/) this repository and use it free for your own purposes.
 
