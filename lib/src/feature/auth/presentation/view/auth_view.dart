@@ -9,6 +9,7 @@ import '../../domain/usecase/sign_in_with_google_usecase.dart';
 import '../../domain/usecase/sign_in_with_twitter_usecase.dart';
 import '../../domain/usecase/sign_out_usecase.dart';
 import '../logic/auth_controller.dart';
+import 'widget/sign_in_button.dart';
 
 class AuthenticationView extends StatelessWidget {
   AuthenticationView({Key? key}) : super(key: key);
@@ -61,217 +62,73 @@ class AuthenticationView extends StatelessWidget {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        //TODO: the false is added in condition to make Sign in apple unavailable
-                        if (false && controller.isSignInWithAppleSupported)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: MaterialButton(
-                              minWidth: 200.0,
-                              onPressed: () => controller.loading
-                                  ? null
-                                  : controller.signInWithApple(context),
-                              color: Colors.grey.shade900,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32.0)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0,
-                                  horizontal: 12.0,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (controller.signingInWithApple)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: SizedBox(
-                                          width: 18.0,
-                                          height: 18.0,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 3.0,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: Image.asset(
-                                          'assets/icons/apple.png',
-                                          width: 18.0,
-                                          height: 18.0,
-                                        ),
-                                      ),
-                                    Text(
-                                      'Sign in with Apple',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                        //TODO: Commented to make Sign in apple unavailable
+                        // if (controller.isSignInWithAppleSupported)
+                        //   SignInButton(
+                        //     onPressed: () => controller.loading
+                        //         ? null
+                        //         : controller.signInWithApple(context),
+                        //     loading: controller.signingInWithApple,
+                        //     text: 'Sign in with Apple',
+                        //     leading: Image.asset(
+                        //       'assets/icons/apple.png',
+                        //       width: 18.0,
+                        //       height: 18.0,
+                        //     ),
+                        //   ),
+
                         if (controller.isSignInWithGoogleSupported)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
-                            child: MaterialButton(
+                            child: SignInButton(
                               onPressed: () => controller.loading
                                   ? null
                                   : controller.signInWithGoogle(context),
-                              color: Colors.grey.shade900,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32.0)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16.0,
-                                  horizontal: 12.0,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (controller.signingInWithGoogle)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: SizedBox(
-                                          width: 18.0,
-                                          height: 18.0,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 3.0,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: Image.asset(
-                                          'assets/icons/google.png',
-                                          width: 18.0,
-                                          height: 18.0,
-                                        ),
-                                      ),
-                                    Text(
-                                      'Sign in with Google',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              loading: controller.signingInWithGoogle,
+                              text: 'Sign in with Google',
+                              leading: Image.asset(
+                                'assets/icons/google.png',
+                                width: 18.0,
+                                height: 18.0,
                               ),
                             ),
                           ),
+
                         if (controller.isSignInWithFacebookSupported)
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: MaterialButton(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: SignInButton(
                               onPressed: () => controller.loading
                                   ? null
                                   : controller.signInWithFacebook(context),
-                              color: Colors.grey.shade900,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32.0)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16.0,
-                                  horizontal: 12.0,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (controller.signingInWithFacebook)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: SizedBox(
-                                          width: 18.0,
-                                          height: 18.0,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 3.0,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: Image.asset(
-                                          'assets/icons/facebook.png',
-                                          width: 18.0,
-                                          height: 18.0,
-                                        ),
-                                      ),
-                                    Text(
-                                      'Sign in with Facebook',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              loading: controller.signingInWithGoogle,
+                              text: 'Sign in with Facebook',
+                              leading: Image.asset(
+                                'assets/icons/facebook.png',
+                                width: 18.0,
+                                height: 18.0,
                               ),
                             ),
                           ),
-                        //TODO: the false is added in condition to make Sign in twitter unavailable (due to the API account issue)
-                        if (false && controller.isSignInWithTwitterSupported)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: MaterialButton(
-                              onPressed: () => controller.loading
-                                  ? null
-                                  : controller.signInWithTwitter(context),
-                              color: Colors.grey.shade900,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32.0)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0,
-                                  horizontal: 12.0,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (controller.signingInWithTwitter)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: SizedBox(
-                                          width: 18.0,
-                                          height: 18.0,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 3.0,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12.0),
-                                        child: Image.asset(
-                                          'assets/icons/twitter.png',
-                                          width: 18.0,
-                                          height: 18.0,
-                                        ),
-                                      ),
-                                    Text(
-                                      'Sign in with Twitter',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+
+                        //TODO: Commented to make Sign in twitter unavailable
+                        // if (controller.isSignInWithFacebookSupported)
+                        //   Padding(
+                        //     padding: const EdgeInsets.only(bottom: 12.0),
+                        //     child: SignInButton(
+                        //       onPressed: () => controller.loading
+                        //           ? null
+                        //           : controller.signInWithTwitter(context),
+                        //       loading: controller.signingInWithGoogle,
+                        //       text: 'Sign in with Twitter',
+                        //       leading: Image.asset(
+                        //         'assets/icons/twitter.png',
+                        //         width: 18.0,
+                        //         height: 18.0,
+                        //       ),
+                        //     ),
+                        //   ),
+
                         if (controller.isSignInWithGoogleSupported ||
                             controller.isSignInWithFacebookSupported)
                           Padding(
