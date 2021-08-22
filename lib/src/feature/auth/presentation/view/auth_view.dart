@@ -62,7 +62,7 @@ class AuthenticationView extends StatelessWidget {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        //TODO: Commented to make Sign in apple unavailable
+                        //TODO: Commented to make Sign in apple unavailable as the feature is not complete
                         // if (controller.isSignInWithAppleSupported)
                         //   SignInButton(
                         //     onPressed: () => controller.loading
@@ -101,7 +101,7 @@ class AuthenticationView extends StatelessWidget {
                               onPressed: () => controller.loading
                                   ? null
                                   : controller.signInWithFacebook(context),
-                              loading: controller.signingInWithGoogle,
+                              loading: controller.signingInWithFacebook,
                               text: 'Sign in with Facebook',
                               leading: Image.asset(
                                 'assets/icons/facebook.png',
@@ -111,7 +111,7 @@ class AuthenticationView extends StatelessWidget {
                             ),
                           ),
 
-                        //TODO: Commented to make Sign in twitter unavailable
+                        //TODO: Commented to make Sign in twitter unavailable as the feature is not complete
                         // if (controller.isSignInWithFacebookSupported)
                         //   Padding(
                         //     padding: const EdgeInsets.only(bottom: 12.0),
@@ -119,7 +119,7 @@ class AuthenticationView extends StatelessWidget {
                         //       onPressed: () => controller.loading
                         //           ? null
                         //           : controller.signInWithTwitter(context),
-                        //       loading: controller.signingInWithGoogle,
+                        //       loading: controller.signingInWithTwitter,
                         //       text: 'Sign in with Twitter',
                         //       leading: Image.asset(
                         //         'assets/icons/twitter.png',
