@@ -10,15 +10,20 @@
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="the_places_app">
+  <meta name="apple-mobile-web-app-title" content="The Places App">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <title>the_places_app</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <!-- Firebase Scripts -->
   <script src="scripts/js/firebase/8.6.1/firebase-app.js"></script>
   <script src="scripts/js/firebase/8.6.1/firebase-auth.js"></script>
+
+  <!-- Below script is for Facebook Auth plugin -->
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
 
   <script>
     var serviceWorkerVersion = null;
@@ -35,12 +40,8 @@
     }
 
     if ('serviceWorker' in navigator) {
-      // Service workers are supported. Use them.
       window.addEventListener('load', function () {
-        // Wait for registration to finish before dropping the <script> tag.
-        // Otherwise, the browser will load the script multiple times,
-        // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+       var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
         navigator.serviceWorker.register(serviceWorkerUrl)
           .then((reg) => {
             function waitForActivation(serviceWorker) {
@@ -52,25 +53,18 @@
               });
             }
             if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
               waitForActivation(reg.installing ?? reg.waiting);
             } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
               console.log('New service worker available.');
               reg.update();
               waitForActivation(reg.installing);
             } else {
-              // Existing service worker is still good.
               console.log('Loading app from service worker.');
               loadMainDartJs();
             }
           });
-
-        // If service worker doesn't succeed in a reasonable amount of time,
-        // fallback to plaint <script> tag.
-        setTimeout(() => {
+        
+          setTimeout(() => {
           if (!scriptLoaded) {
             console.warn(
               'Failed to load app from service worker. Falling back to plain <script> tag.',
@@ -80,22 +74,13 @@
         }, 4000);
       });
     } else {
-      // Service workers not supported. Just drop the <script> tag.
       loadMainDartJs();
     }
   </script>
 
-  <script>
-    var firebaseConfig = {
-      apiKey: "AIzaSyC3ThcK0LczM42xEKSe-TMpjQYk5w_VvB4",
-      authDomain: "the-places-app.firebaseapp.com",
-      projectId: "the-places-app",
-      storageBucket: "the-places-app.appspot.com",
-      messagingSenderId: "189577389604",
-      appId: "1:189577389604:web:7cae1c22b8394a3c6a9ab1"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-  </script>
+  <!-- This script below should contains Firebase plugin initialization code -->
+  <!-- You have to create this file, it does not exist in the project -->
+  <script src="scripts/js/firebase/config.js"></script>
+  
 </body>
 </html>

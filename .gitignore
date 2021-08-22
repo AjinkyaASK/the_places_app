@@ -17,3 +17,6 @@ lib/generated_plugin_registrant.dart
 
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
+lib/src/config/facebook_api_config.dart
+lib/src/config/twitter_api_config.dart
+web/scripts/js/firebase/config.js
